@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema'
+import { resolve, virtual } from '@feathersjs/schema'
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
 import type { Static } from '@feathersjs/typebox'
 import { passwordHash } from '@feathersjs/authentication-local'
@@ -7,13 +7,19 @@ import { passwordHash } from '@feathersjs/authentication-local'
 import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
 import type { UserService } from './users.class'
+import { rolesSchema } from '../roles/roles.schema'
+import { tenantSchema } from '../tenants/tenants.schema'
 
 // Main data model schema
 export const userSchema = Type.Object(
   {
     id: Type.Number(),
     email: Type.String(),
-    password: Type.Optional(Type.String())
+    password: Type.Optional(Type.String()),
+    roleId: Type.Integer(),
+    tenantId: Type.Integer(),
+    role: Type.Ref(rolesSchema),
+    tenant: Type.Ref(tenantSchema)
   },
   { $id: 'User', additionalProperties: false }
 )
@@ -23,11 +29,17 @@ export const userResolver = resolve<User, HookContext<UserService>>({})
 
 export const userExternalResolver = resolve<User, HookContext<UserService>>({
   // The password should never be visible externally
-  password: async () => undefined
+  password: async () => undefined,
+  role: virtual(async (user, context) => {
+    return await context.app.service('roles').get(user.roleId)
+  }),
+  tenant: virtual(async (user, context) => {
+    return await context.app.service('tenants').get(user.tenantId)
+  })
 })
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['email', 'password'], {
+export const userDataSchema = Type.Pick(userSchema, ['email', 'password', 'roleId', 'tenantId'], {
   $id: 'UserData'
 })
 export type UserData = Static<typeof userDataSchema>

@@ -11,7 +11,10 @@ import type { BaseItemsService } from './base-items.class'
 export const baseItemsSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String(),
+    available: Type.Boolean(),
+    categoryId: Type.Integer(),
+    tenantId: Type.Integer()
   },
   { $id: 'BaseItems', additionalProperties: false }
 )
@@ -22,7 +25,7 @@ export const baseItemsResolver = resolve<BaseItems, HookContext<BaseItemsService
 export const baseItemsExternalResolver = resolve<BaseItems, HookContext<BaseItemsService>>({})
 
 // Schema for creating new entries
-export const baseItemsDataSchema = Type.Pick(baseItemsSchema, ['text'], {
+export const baseItemsDataSchema = Type.Pick(baseItemsSchema, ['name', 'available', 'categoryId', 'tenantId'], {
   $id: 'BaseItemsData'
 })
 export type BaseItemsData = Static<typeof baseItemsDataSchema>
@@ -38,7 +41,7 @@ export const baseItemsPatchValidator = getValidator(baseItemsPatchSchema, dataVa
 export const baseItemsPatchResolver = resolve<BaseItems, HookContext<BaseItemsService>>({})
 
 // Schema for allowed query properties
-export const baseItemsQueryProperties = Type.Pick(baseItemsSchema, ['id', 'text'])
+export const baseItemsQueryProperties = Type.Pick(baseItemsSchema, ['id', 'name', 'available', 'categoryId', 'tenantId'])
 export const baseItemsQuerySchema = Type.Intersect(
   [
     querySyntax(baseItemsQueryProperties),

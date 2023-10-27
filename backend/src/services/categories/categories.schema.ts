@@ -11,7 +11,10 @@ import type { CategoriesService } from './categories.class'
 export const categoriesSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String(),
+    color: Type.Optional(Type.String()),
+    active: Type.Boolean(),
+    tenantId: Type.Integer()
   },
   { $id: 'Categories', additionalProperties: false }
 )
@@ -22,7 +25,7 @@ export const categoriesResolver = resolve<Categories, HookContext<CategoriesServ
 export const categoriesExternalResolver = resolve<Categories, HookContext<CategoriesService>>({})
 
 // Schema for creating new entries
-export const categoriesDataSchema = Type.Pick(categoriesSchema, ['text'], {
+export const categoriesDataSchema = Type.Pick(categoriesSchema, ['name', 'color', 'active', 'tenantId'], {
   $id: 'CategoriesData'
 })
 export type CategoriesData = Static<typeof categoriesDataSchema>
@@ -38,7 +41,7 @@ export const categoriesPatchValidator = getValidator(categoriesPatchSchema, data
 export const categoriesPatchResolver = resolve<Categories, HookContext<CategoriesService>>({})
 
 // Schema for allowed query properties
-export const categoriesQueryProperties = Type.Pick(categoriesSchema, ['id', 'text'])
+export const categoriesQueryProperties = Type.Pick(categoriesSchema, ['id', 'name', 'color', 'active', 'tenantId'])
 export const categoriesQuerySchema = Type.Intersect(
   [
     querySyntax(categoriesQueryProperties),

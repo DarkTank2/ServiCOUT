@@ -4,6 +4,39 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { rolesClient } from './services/roles/roles.shared'
+export type { Roles, RolesData, RolesQuery, RolesPatch } from './services/roles/roles.shared'
+
+import { orderedItemsClient } from './services/ordered-items/ordered-items.shared'
+export type {
+  OrderedItems,
+  OrderedItemsData,
+  OrderedItemsQuery,
+  OrderedItemsPatch
+} from './services/ordered-items/ordered-items.shared'
+
+import { itemsHaveOptionsClient } from './services/items-have-options/items-have-options.shared'
+export type {
+  ItemsHaveOptions,
+  ItemsHaveOptionsData,
+  ItemsHaveOptionsQuery,
+  ItemsHaveOptionsPatch
+} from './services/items-have-options/items-have-options.shared'
+
+import { tenantClient } from './services/tenants/tenants.shared'
+export type { Tenant, TenantData, TenantQuery, TenantPatch } from './services/tenants/tenants.shared'
+
+import { orderedItemHasOptionClient } from './services/ordered-items-have-options/ordered-items-have-options.shared'
+export type {
+  OrderedItemHasOption,
+  OrderedItemHasOptionData,
+  OrderedItemHasOptionQuery,
+  OrderedItemHasOptionPatch
+} from './services/ordered-items-have-options/ordered-items-have-options.shared'
+
+import { optionClient } from './services/options/options.shared'
+export type { Option, OptionData, OptionQuery, OptionPatch } from './services/options/options.shared'
+
 import { tablesClient } from './services/tables/tables.shared'
 export type { Tables, TablesData, TablesQuery, TablesPatch } from './services/tables/tables.shared'
 
@@ -73,5 +106,11 @@ export const createClient = <Configuration = any,>(
   client.configure(itemsClient)
   client.configure(categoriesClient)
   client.configure(tablesClient)
+  client.configure(optionClient)
+  client.configure(orderedItemHasOptionClient)
+  client.configure(tenantClient)
+  client.configure(itemsHaveOptionsClient)
+  client.configure(orderedItemsClient)
+  client.configure(rolesClient)
   return client
 }

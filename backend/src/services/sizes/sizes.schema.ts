@@ -11,7 +11,7 @@ import type { SizesService } from './sizes.class'
 export const sizesSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String()
   },
   { $id: 'Sizes', additionalProperties: false }
 )
@@ -22,7 +22,7 @@ export const sizesResolver = resolve<Sizes, HookContext<SizesService>>({})
 export const sizesExternalResolver = resolve<Sizes, HookContext<SizesService>>({})
 
 // Schema for creating new entries
-export const sizesDataSchema = Type.Pick(sizesSchema, ['text'], {
+export const sizesDataSchema = Type.Pick(sizesSchema, ['name'], {
   $id: 'SizesData'
 })
 export type SizesData = Static<typeof sizesDataSchema>
@@ -38,7 +38,7 @@ export const sizesPatchValidator = getValidator(sizesPatchSchema, dataValidator)
 export const sizesPatchResolver = resolve<Sizes, HookContext<SizesService>>({})
 
 // Schema for allowed query properties
-export const sizesQueryProperties = Type.Pick(sizesSchema, ['id', 'text'])
+export const sizesQueryProperties = Type.Pick(sizesSchema, ['id', 'name'])
 export const sizesQuerySchema = Type.Intersect(
   [
     querySyntax(sizesQueryProperties),

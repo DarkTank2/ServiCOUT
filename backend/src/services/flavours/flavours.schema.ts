@@ -11,7 +11,7 @@ import type { FlavoursService } from './flavours.class'
 export const flavoursSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String()
   },
   { $id: 'Flavours', additionalProperties: false }
 )
@@ -22,7 +22,7 @@ export const flavoursResolver = resolve<Flavours, HookContext<FlavoursService>>(
 export const flavoursExternalResolver = resolve<Flavours, HookContext<FlavoursService>>({})
 
 // Schema for creating new entries
-export const flavoursDataSchema = Type.Pick(flavoursSchema, ['text'], {
+export const flavoursDataSchema = Type.Pick(flavoursSchema, ['name'], {
   $id: 'FlavoursData'
 })
 export type FlavoursData = Static<typeof flavoursDataSchema>
@@ -38,7 +38,7 @@ export const flavoursPatchValidator = getValidator(flavoursPatchSchema, dataVali
 export const flavoursPatchResolver = resolve<Flavours, HookContext<FlavoursService>>({})
 
 // Schema for allowed query properties
-export const flavoursQueryProperties = Type.Pick(flavoursSchema, ['id', 'text'])
+export const flavoursQueryProperties = Type.Pick(flavoursSchema, ['id', 'name'])
 export const flavoursQuerySchema = Type.Intersect(
   [
     querySyntax(flavoursQueryProperties),

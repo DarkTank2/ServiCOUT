@@ -11,7 +11,8 @@ import type { OrderedItemHasOptionService } from './ordered-items-have-options.c
 export const orderedItemHasOptionSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    orderedItemId: Type.Integer(),
+    optionId: Type.Integer()
   },
   { $id: 'OrderedItemHasOption', additionalProperties: false }
 )
@@ -28,7 +29,7 @@ export const orderedItemHasOptionExternalResolver = resolve<
 >({})
 
 // Schema for creating new entries
-export const orderedItemHasOptionDataSchema = Type.Pick(orderedItemHasOptionSchema, ['text'], {
+export const orderedItemHasOptionDataSchema = Type.Pick(orderedItemHasOptionSchema, ['orderedItemId', 'optionId'], {
   $id: 'OrderedItemHasOptionData'
 })
 export type OrderedItemHasOptionData = Static<typeof orderedItemHasOptionDataSchema>
@@ -50,7 +51,7 @@ export const orderedItemHasOptionPatchResolver = resolve<
 >({})
 
 // Schema for allowed query properties
-export const orderedItemHasOptionQueryProperties = Type.Pick(orderedItemHasOptionSchema, ['id', 'text'])
+export const orderedItemHasOptionQueryProperties = Type.Pick(orderedItemHasOptionSchema, ['id', 'orderedItemId', 'optionId'])
 export const orderedItemHasOptionQuerySchema = Type.Intersect(
   [
     querySyntax(orderedItemHasOptionQueryProperties),

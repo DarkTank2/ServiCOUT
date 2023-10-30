@@ -1,0 +1,53 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: ssp_db
+    environment:
+      POSTGRES_USER: "scoutadmin"
+      POSTGRES_PASSWORD: "DB4ScoutServiceProgram"
+      POSTGRES_DB: "main"
+    ports:
+      - 5432:5432
+    # volumes:
+    #   - ./pgdata:/var/lib/postgresql/data
+
+  # scout-proxy:
+  #   image: traefik:v2.2
+  #   #command: --api.insecure=true --providers.docker
+  #   ports:
+  #     - 9090:80
+  #     - 8090:8080
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./traefik.yml:/etc/traefik/traefik.yml
+  #     - ./traefik-fileprovider.yml:/etc/traefik/traefik-fileprovider.yml
+
+  backend:
+    image: node:lts
+    container_name: "pff_backend"
+    user: "node"
+    working_dir: /home/node/app
+    volumes:
+      - ./backend:/home/node/app
+    ports:
+       - 3030:3030
+    command: "npm run dev"
+    depends_on:
+      - postgres
+
+  # frontend:
+  #   image: node:lts
+  #   container_name: "pff_frontend"
+  #   user: "node"
+  #   working_dir: /home/node/app
+  #   #environment:
+  #     #- NODE_ENV=production
+  #   volumes:
+  #     - ./frontend:/home/node/app
+  #   ports:
+  #     - 3031:8080
+  #   command: "npm run serve"
+  #   labels:
+  #     - traefik.http.routers.FrontendRouter.rule=PathPrefix(`/`)
+  #     - traefik.http.services.FrontendService.loadbalancer.server.port=8080

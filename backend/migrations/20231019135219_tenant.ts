@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('currentEventName')
     // limits for items or baseItems, not decided yet
     // additionally the limits are not takeninto account yet since it is planned for commercialization
-    table.integer('limits').defaultTo(0)
+    table.integer('limits').defaultTo(10)
     
     table.integer('parentId')
     

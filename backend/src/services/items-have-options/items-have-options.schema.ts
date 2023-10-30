@@ -11,7 +11,9 @@ import type { ItemsHaveOptionsService } from './items-have-options.class'
 export const itemsHaveOptionsSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    itemId: Type.Integer(),
+    optionId: Type.Integer(),
+    tenantId: Type.Integer()
   },
   { $id: 'ItemsHaveOptions', additionalProperties: false }
 )
@@ -25,7 +27,7 @@ export const itemsHaveOptionsExternalResolver = resolve<
 >({})
 
 // Schema for creating new entries
-export const itemsHaveOptionsDataSchema = Type.Pick(itemsHaveOptionsSchema, ['text'], {
+export const itemsHaveOptionsDataSchema = Type.Pick(itemsHaveOptionsSchema, ['itemId', 'optionId', 'tenantId'], {
   $id: 'ItemsHaveOptionsData'
 })
 export type ItemsHaveOptionsData = Static<typeof itemsHaveOptionsDataSchema>
@@ -45,7 +47,7 @@ export const itemsHaveOptionsPatchResolver = resolve<ItemsHaveOptions, HookConte
 )
 
 // Schema for allowed query properties
-export const itemsHaveOptionsQueryProperties = Type.Pick(itemsHaveOptionsSchema, ['id', 'text'])
+export const itemsHaveOptionsQueryProperties = Type.Pick(itemsHaveOptionsSchema, ['id', 'itemId', 'optionId', 'tenantId'])
 export const itemsHaveOptionsQuerySchema = Type.Intersect(
   [
     querySyntax(itemsHaveOptionsQueryProperties),

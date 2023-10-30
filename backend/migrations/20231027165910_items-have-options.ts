@@ -3,10 +3,12 @@ import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('items-have-options', (table) => {
-    table.primary(['itemId', 'optionId', 'tenantId'])
+    table.increments('id')
+    
     table.integer('itemId').notNullable()
     table.integer('optionId').notNullable()
     table.integer('tenantId').notNullable()
+    table.unique(['itemId', 'optionId', 'tenantId'], { indexName: 'iho_iId_oId_tId_constraint', useConstraint: true })
 
     table.foreign('itemId').references('id').inTable('items')
     table.foreign('optionId').references('id').inTable('options')

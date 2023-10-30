@@ -6,8 +6,8 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id')
 
     table.integer('quantity').notNullable()
-    table.boolean('finished').notNullable().defaultTo(false)
-    table.integer('cashed').notNullable().defaultTo(0)
+    table.boolean('finished').defaultTo(false)
+    table.integer('cashed').defaultTo(0)
     table.string('waiter').notNullable()
     table.string('comment')
     

@@ -8,6 +8,13 @@ export async function up(knex: Knex): Promise<void> {
         { name: 'user' }
     ])
 
+    await knex('tenants').insert([
+        { name: 'ServiCOUT_main', currentEventName: 'No Event planned', limits: -1 }
+    ])
+    await knex('tenants').insert([
+        { name: 'PFF36', currentEventName: 'Ball24', parentId: 1, limits: -1 }
+    ])
+
     await knex('tables').insert([
         { name: 'Tisch #1' },
         { name: 'Tisch #2' },
@@ -29,8 +36,19 @@ export async function up(knex: Knex): Promise<void> {
         { name: 'Tisch #18' }
     ])
 
-    await knex('sizes').insert([])
-    await knex('flavours').insert([])
+    await knex('sizes').insert([
+        { name: '1/8l' },
+        { name: '1/4l' },
+        { name: '1/2l' },
+        { name: '0,33l Fl.' },
+        { name: '0,5l Fl.' },
+        { name: 'Flasche' }
+    ])
+    await knex('flavours').insert([
+        { name: 'pur' },
+        { name: 'gspr. Wasser' },
+        { name: 'gspr. Mineral' }
+    ])
 }
 
 

@@ -12,7 +12,7 @@ export const baseItemsSchema = Type.Object(
   {
     id: Type.Number(),
     name: Type.String(),
-    available: Type.Boolean(),
+    available: Type.Optional(Type.Boolean()),
     categoryId: Type.Integer(),
     tenantId: Type.Integer()
   },

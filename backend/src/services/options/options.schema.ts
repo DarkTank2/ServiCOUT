@@ -11,7 +11,10 @@ import type { OptionService } from './options.class'
 export const optionSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String(),
+    priceAddition: Type.Number(),
+    default: Type.Boolean(),
+    tenantId: Type.Integer()
   },
   { $id: 'Option', additionalProperties: false }
 )
@@ -22,7 +25,7 @@ export const optionResolver = resolve<Option, HookContext<OptionService>>({})
 export const optionExternalResolver = resolve<Option, HookContext<OptionService>>({})
 
 // Schema for creating new entries
-export const optionDataSchema = Type.Pick(optionSchema, ['text'], {
+export const optionDataSchema = Type.Pick(optionSchema, ['name', 'priceAddition', 'default', 'tenantId'], {
   $id: 'OptionData'
 })
 export type OptionData = Static<typeof optionDataSchema>
@@ -38,7 +41,7 @@ export const optionPatchValidator = getValidator(optionPatchSchema, dataValidato
 export const optionPatchResolver = resolve<Option, HookContext<OptionService>>({})
 
 // Schema for allowed query properties
-export const optionQueryProperties = Type.Pick(optionSchema, ['id', 'text'])
+export const optionQueryProperties = Type.Pick(optionSchema, ['id', 'name', 'priceAddition', 'default', 'tenantId'])
 export const optionQuerySchema = Type.Intersect(
   [
     querySyntax(optionQueryProperties),

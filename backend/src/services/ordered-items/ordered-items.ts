@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { OrderedItemsService, getOptions } from './ordered-items.class'
 import { orderedItemsPath, orderedItemsMethods } from './ordered-items.shared'
+import { logUser } from '../../hooks/log-user'
 
 export * from './ordered-items.class'
 export * from './ordered-items.schema'
@@ -47,6 +48,7 @@ export const orderedItems = (app: Application) => {
       find: [],
       get: [],
       create: [
+        logUser,
         schemaHooks.validateData(orderedItemsDataValidator),
         schemaHooks.resolveData(orderedItemsDataResolver)
       ],

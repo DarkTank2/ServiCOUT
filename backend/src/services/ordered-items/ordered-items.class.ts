@@ -26,6 +26,7 @@ export class OrderedItemsService<ServiceParams extends Params = OrderedItemsPara
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
     paginate: app.get('paginate'),
+    multi: ['create', 'patch'],
     Model: app.get('postgresqlClient'),
     name: 'ordered-items'
   }

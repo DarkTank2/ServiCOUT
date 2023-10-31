@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { SizesService, getOptions } from './sizes.class'
 import { sizesPath, sizesMethods } from './sizes.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './sizes.class'
 export * from './sizes.schema'
@@ -40,12 +41,25 @@ export const sizes = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(sizesQueryValidator), schemaHooks.resolveQuery(sizesQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(sizesQueryValidator),
+        schemaHooks.resolveQuery(sizesQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(sizesDataValidator), schemaHooks.resolveData(sizesDataResolver)],
-      patch: [schemaHooks.validateData(sizesPatchValidator), schemaHooks.resolveData(sizesPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(sizesDataValidator),
+        schemaHooks.resolveData(sizesDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(sizesPatchValidator),
+        schemaHooks.resolveData(sizesPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []

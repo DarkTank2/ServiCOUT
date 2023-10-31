@@ -25,7 +25,14 @@ export const userSchema = Type.Object(
 )
 export type User = Static<typeof userSchema>
 export const userValidator = getValidator(userSchema, dataValidator)
-export const userResolver = resolve<User, HookContext<UserService>>({})
+export const userResolver = resolve<User, HookContext<UserService>>({
+  role: virtual(async (user, context) => {
+    return await context.app.service('roles').get(user.roleId)
+  }),
+  tenant: virtual(async (user, context) => {
+    return await context.app.service('tenants').get(user.tenantId)
+  })
+})
 
 export const userExternalResolver = resolve<User, HookContext<UserService>>({
   // The password should never be visible externally

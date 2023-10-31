@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { FlavoursService, getOptions } from './flavours.class'
 import { flavoursPath, flavoursMethods } from './flavours.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './flavours.class'
 export * from './flavours.schema'
@@ -47,14 +48,18 @@ export const flavours = (app: Application) => {
       find: [],
       get: [],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(flavoursDataValidator),
         schemaHooks.resolveData(flavoursDataResolver)
       ],
       patch: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(flavoursPatchValidator),
         schemaHooks.resolveData(flavoursPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []

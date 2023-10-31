@@ -17,6 +17,8 @@ import {
 import type { Application } from '../../declarations'
 import { CategoriesService, getOptions } from './categories.class'
 import { categoriesPath, categoriesMethods } from './categories.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
+import { denyUserRole } from '../../hooks/deny-user-role'
 
 export * from './categories.class'
 export * from './categories.schema'
@@ -47,14 +49,18 @@ export const categories = (app: Application) => {
       find: [],
       get: [],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(categoriesDataValidator),
         schemaHooks.resolveData(categoriesDataResolver)
       ],
       patch: [
+        denyUserRole(['user']),
         schemaHooks.validateData(categoriesPatchValidator),
         schemaHooks.resolveData(categoriesPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []

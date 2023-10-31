@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { TenantService, getOptions } from './tenants.class'
 import { tenantPath, tenantMethods } from './tenants.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './tenants.class'
 export * from './tenants.schema'
@@ -40,12 +41,25 @@ export const tenant = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(tenantQueryValidator), schemaHooks.resolveQuery(tenantQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(tenantQueryValidator),
+        schemaHooks.resolveQuery(tenantQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(tenantDataValidator), schemaHooks.resolveData(tenantDataResolver)],
-      patch: [schemaHooks.validateData(tenantPatchValidator), schemaHooks.resolveData(tenantPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(tenantDataValidator),
+        schemaHooks.resolveData(tenantDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(tenantPatchValidator),
+        schemaHooks.resolveData(tenantPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []

@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { OptionService, getOptions } from './options.class'
 import { optionPath, optionMethods } from './options.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './options.class'
 export * from './options.schema'
@@ -40,12 +41,25 @@ export const option = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(optionQueryValidator), schemaHooks.resolveQuery(optionQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(optionQueryValidator),
+        schemaHooks.resolveQuery(optionQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(optionDataValidator), schemaHooks.resolveData(optionDataResolver)],
-      patch: [schemaHooks.validateData(optionPatchValidator), schemaHooks.resolveData(optionPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(optionDataValidator),
+        schemaHooks.resolveData(optionDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(optionPatchValidator),
+        schemaHooks.resolveData(optionPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []

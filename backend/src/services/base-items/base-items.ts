@@ -17,6 +17,8 @@ import {
 import type { Application } from '../../declarations'
 import { BaseItemsService, getOptions } from './base-items.class'
 import { baseItemsPath, baseItemsMethods } from './base-items.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
+import { denyUserRole } from '../../hooks/deny-user-role'
 
 export * from './base-items.class'
 export * from './base-items.schema'
@@ -47,14 +49,18 @@ export const baseItems = (app: Application) => {
       find: [],
       get: [],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(baseItemsDataValidator),
         schemaHooks.resolveData(baseItemsDataResolver)
       ],
       patch: [
+        denyUserRole(['user']),
         schemaHooks.validateData(baseItemsPatchValidator),
         schemaHooks.resolveData(baseItemsPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []

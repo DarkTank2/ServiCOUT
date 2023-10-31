@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { RolesService, getOptions } from './roles.class'
 import { rolesPath, rolesMethods } from './roles.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './roles.class'
 export * from './roles.schema'
@@ -40,12 +41,25 @@ export const roles = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(rolesQueryValidator), schemaHooks.resolveQuery(rolesQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(rolesQueryValidator),
+        schemaHooks.resolveQuery(rolesQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(rolesDataValidator), schemaHooks.resolveData(rolesDataResolver)],
-      patch: [schemaHooks.validateData(rolesPatchValidator), schemaHooks.resolveData(rolesPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(rolesDataValidator),
+        schemaHooks.resolveData(rolesDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(rolesPatchValidator),
+        schemaHooks.resolveData(rolesPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []

@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { ItemsHaveOptionsService, getOptions } from './items-have-options.class'
 import { itemsHaveOptionsPath, itemsHaveOptionsMethods } from './items-have-options.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './items-have-options.class'
 export * from './items-have-options.schema'
@@ -47,14 +48,18 @@ export const itemsHaveOptions = (app: Application) => {
       find: [],
       get: [],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(itemsHaveOptionsDataValidator),
         schemaHooks.resolveData(itemsHaveOptionsDataResolver)
       ],
       patch: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(itemsHaveOptionsPatchValidator),
         schemaHooks.resolveData(itemsHaveOptionsPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []

@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { UserService, getOptions } from './users.class'
 import { userPath, userMethods } from './users.shared'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './users.class'
 export * from './users.schema'
@@ -33,20 +34,34 @@ export const user = (app: Application) => {
   // Initialize hooks
   app.service(userPath).hooks({
     around: {
-      all: [schemaHooks.resolveExternal(userExternalResolver), schemaHooks.resolveResult(userResolver)],
-      find: [authenticate('jwt')],
-      get: [authenticate('jwt')],
-      create: [],
-      update: [authenticate('jwt')],
-      patch: [authenticate('jwt')],
-      remove: [authenticate('jwt')]
-    },
-    before: {
-      all: [schemaHooks.validateQuery(userQueryValidator), schemaHooks.resolveQuery(userQueryResolver)],
+      all: [
+        authenticate('jwt'),
+        schemaHooks.resolveExternal(userExternalResolver),
+        schemaHooks.resolveResult(userResolver)
+    ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
-      patch: [schemaHooks.validateData(userPatchValidator), schemaHooks.resolveData(userPatchResolver)],
+      create: [],
+      update: [],
+      patch: [],
+      remove: []
+    },
+    before: {
+      all: [
+        schemaHooks.validateQuery(userQueryValidator),
+        schemaHooks.resolveQuery(userQueryResolver)
+      ],
+      find: [],
+      get: [],
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(userDataValidator),
+        schemaHooks.resolveData(userDataResolver)
+      ],
+      patch: [
+        schemaHooks.validateData(userPatchValidator),
+        schemaHooks.resolveData(userPatchResolver)
+      ],
       remove: []
     },
     after: {

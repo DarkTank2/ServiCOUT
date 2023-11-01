@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { logger } from "../src/logger";
 
 
 export async function up(knex: Knex): Promise<void> {
@@ -7,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
         { name: 'stationary' },
         { name: 'user' }
     ])
+    logger.info('Created roles.')
 
     await knex('tenants').insert([
         { name: 'ServiCOUT_main', currentEventName: 'No Event planned', limits: -1 }
@@ -14,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
     await knex('tenants').insert([
         { name: 'PFF36', currentEventName: 'Ball24', parentId: 1, limits: -1 }
     ])
+    logger.info('Created basic tenants.')
 
     await knex('tables').insert([
         { name: 'Tisch #1' },
@@ -35,6 +38,7 @@ export async function up(knex: Knex): Promise<void> {
         { name: 'Tisch #17' },
         { name: 'Tisch #18' }
     ])
+    logger.info('Created basic tables.')
 
     await knex('sizes').insert([
         { name: '1/8l' },
@@ -44,11 +48,13 @@ export async function up(knex: Knex): Promise<void> {
         { name: '0,5l Fl.' },
         { name: 'Flasche' }
     ])
+    logger.info('Created basic sizes.')
     await knex('flavours').insert([
         { name: 'pur' },
         { name: 'gspr. Wasser' },
         { name: 'gspr. Mineral' }
     ])
+    logger.info('Created basic flavours.')
 }
 
 

@@ -32,7 +32,10 @@ services:
       - ./backend:/home/node/app
     ports:
        - 3030:3030
-    command: "npm run dev"
+    environment:
+      - EMAIL=<insert-your-email-here>
+      - PASSWORD=<insert-your-password-here>
+    command: "npm run full:dev"
     depends_on:
       - postgres
 

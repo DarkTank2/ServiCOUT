@@ -19,8 +19,8 @@ export const orderedItemsSchema = Type.Object(
     itemId: Type.Integer(),
     tableId: Type.Integer(),
     tenantId: Type.Integer(),
-    createdAt: Type.Optional(Type.Date()),
-    updatedAt: Type.Optional(Type.Date())
+    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
+    updatedAt: Type.Optional(Type.String({ format: 'date-time' }))
   },
   { $id: 'OrderedItems', additionalProperties: false }
 )
@@ -31,7 +31,7 @@ export const orderedItemsResolver = resolve<OrderedItems, HookContext<OrderedIte
 export const orderedItemsExternalResolver = resolve<OrderedItems, HookContext<OrderedItemsService>>({})
 
 // Schema for creating new entries
-export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'finished', 'cashed', 'waiter', 'comment', 'itemId', 'tableId', 'tenantId'], {
+export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'finished', 'cashed', 'waiter', 'comment', 'itemId', 'tableId', 'tenantId', 'createdAt', 'updatedAt'], {
   $id: 'OrderedItemsData'
 })
 export type OrderedItemsData = Static<typeof orderedItemsDataSchema>

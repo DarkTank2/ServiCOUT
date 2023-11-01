@@ -18,6 +18,7 @@ import type { Application } from '../../declarations'
 import { OrderedItemsService, getOptions } from './ordered-items.class'
 import { orderedItemsPath, orderedItemsMethods } from './ordered-items.shared'
 import { logUser } from '../../hooks/log-user'
+import { syncBulkCreation } from '../../hooks/sync-bulk-creation'
 
 export * from './ordered-items.class'
 export * from './ordered-items.schema'
@@ -49,6 +50,7 @@ export const orderedItems = (app: Application) => {
       get: [],
       create: [
         logUser,
+        syncBulkCreation,
         schemaHooks.validateData(orderedItemsDataValidator),
         schemaHooks.resolveData(orderedItemsDataResolver)
       ],

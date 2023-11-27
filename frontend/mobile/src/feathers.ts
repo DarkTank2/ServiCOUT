@@ -1,5 +1,6 @@
 // src/feathers.ts
 import { createClient } from 'backend'
+import type { OrderedItemHasOption } from 'backend'
 import { createPiniaClient } from 'feathers-pinia'
 import pinia from './store/index'
 import rest from '@feathersjs/rest-client'
@@ -29,6 +30,20 @@ export const api = createPiniaClient(feathersClient, {
         sizes: {},
         flavours: {},
         items: {},
-        'base-items': {}
+        options: {},
+        'base-items': {},
+        'ordered-items': {},
+        'ordered-items-have-options': {
+          setupInstance(data: OrderedItemHasOption) {
+            const withDefaults = useInstanceDefaults({}, data)
+
+            Object.defineProperty(withDefaults, 'orderedItemTempId', {
+              enumerable: false,
+              configurable: true,
+              value: ''
+            })
+            return withDefaults as typeof withDefaults & { orderedItemTempId: string }
+          },
+        }
     },
   })

@@ -1,21 +1,35 @@
 // Composables
+import { useUsersettings } from '@/store/usersettings-store'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
-    children: [
-      {
-        path: '',
-        name: 'Home',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
-      },
-    ],
+    name: 'Base',
+    redirect: (_to: any) => {
+      let usersettings = useUsersettings()
+      if (usersettings.onboarded) {
+        return 'Home'
+      } else {
+        return 'Onboarding'
+      }
+    }
   },
+  {
+    path: '/home',
+    name: 'Home',
+    component: () => import('@/views/Home.vue')
+  },
+  {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: () => import('@/views/Onboarding.vue')
+  },
+  {
+    path: '/order',
+    name: 'Order',
+    component: () => import('@/views/Order.vue')
+  }
 ]
 
 const router = createRouter({

@@ -10,6 +10,7 @@ import type { ItemsService } from './items.class'
 // Main data model schema
 export const itemsSchema = Type.Object(
   {
+    id: Type.Number(),
     price: Type.Number(),
     default: Type.Boolean(),
     baseItemId: Type.Integer(),

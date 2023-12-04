@@ -1,117 +1,85 @@
 <template>
-    <!-- <v-snackbar
-        :value="notification"
-        timeout="-1"
+    <v-snackbar
+        v-model="notification"
+        :timeout="utilities.getNotification.timeout"
         rounded="lg"
         >
-        <div style="margin-left:20px;">
-            <span v-if="notification" v-text="notification.message" :class="colorClass"></span>
-        </div>
-        <template v-slot:action="{ attrs }">
-          <v-progress-circular :value="progress" color="primary" size="40" width="3" class="no-transition">
+        <v-progress-linear v-model="progress" absolute top :color="utilities.getNotification.type"></v-progress-linear>
+        <span v-text="utilities.getNotification.message" :class="colorClass"></span>
+        <template v-slot:actions>
             <v-btn
                 color="red"
                 icon
-                v-bind="attrs"
-                @click="closeNotification"
+                @click="notification = false"
                 >
-                <v-icon>close</v-icon>
+                <v-icon>mdi-close</v-icon>
             </v-btn>
-          </v-progress-circular>
         </template>
-    </v-snackbar> -->
-    <div>test</div>
+    </v-snackbar>
 </template>
 <script setup lang="ts">
-// const timer = ref
-</script>
+const progressTimer = ref<NodeJS.Timeout | null>(null)
+const progressDecrement = ref(0)
+const progress = ref(100)
+const progressTimeoutMS = ref(50)
+const notification = ref(false)
 
-<!-- <script>
-import { mapActions, mapState } from 'vuex'
-export default {
-    data: () => ({
-        timer: null,
-        progressTimer: null,
-        progressDecrement: 0,
-        progress: 0,
-        progressTimeoutMS: 50
-    }),
-    created: function () {},
-    methods: {
-        ...mapActions('utilities', {
-            resetNotification: 'resetNotification'
-        }),
-        closeNotification: function () {
-            if (this.timer) {
-                clearTimeout(this.timer)
-            }
-            if (this.progressTimer) {
-              clearTimeout(this.progressTimer)
-            }
-            this.timer = null
-            this.progressTimer = null
-            this.progress = 0
-            setTimeout(() => { this.resetNotification() }, 50)
-        },
-        makeSingleDecrement: function () {
-          this.progress -= this.progressDecrement
-          if (this.progress <= 0) {
-            this.progressTimer = null
-            return
-          }
-          this.progressTimer = setTimeout(this.makeSingleDecrement, this.progressTimeoutMS)
+let utilities = useUtilityStore()
+
+const makeSingleDecrement = function () {
+    progress.value -= progressDecrement.value
+    if (progress.value <= 0) {
+        progress.value = 0
+        progressTimer.value = null
+        notification.value = false
+        return
+    }
+    progressTimer.value = setTimeout(makeSingleDecrement, progressTimeoutMS.value)
+}
+
+const icon = computed(() => {
+    if (!utilities.getNotification) {
+        return null
+    } else {
+        let icons = {
+            'success': 'check',
+            'error': 'warning'
         }
-    },
-    computed: {
-        ...mapState('utilities', {
-            notification: 'notification'
-        }),
-        icon: function () {
-            let icons = {
-                'success': 'check',
-                'error': 'warning'
-            }
-            return this.notification.icon || icons[this.notification.type] || 'warning'
-        },
-        colorClass: function () {
-            let colors = {
-                'success': 'green--text text--lighten-1',
-                'error': 'red--text text--lighten-1'
-            }
-            return this.notification?.colorClass || colors[this.notification?.type] || 'orange--text text-lighten-1'
+        return utilities.getNotification.icon || icons[utilities.getNotification.type] || 'warning'
+    }
+})
+const colorClass = computed(() => {
+    if (!utilities.getNotification) {
+        return null
+    } else {
+        let colors = {
+            'success': 'text-green-lighten-1',
+            'error': 'txt-red-lighten-1'
         }
-    },
-    watch: {
-        notification: {
-            handler: function (newNotification) {
-                if (newNotification) {
-                    if (this.timer) {
-                        clearTimeout(this.timer)
-                    }
-                    if (this.progressTimer) {
-                      clearTimeout(this.progressTimer)
-                    }
-                    this.progressDecrement = 0
-                    this.progress = 0
-                    if (newNotification.timeout > 0) {
-                      this.progress = 100
-                      this.progressDecrement = 100 / newNotification.timeout // increment per millisecond
-                      this.progressDecrement = this.progressDecrement * this.progressTimeoutMS * 1.15 // make an increment ever thenth of a second
-                      this.progressTimer = setTimeout(this.makeSingleDecrement, this.progressTimeoutMS)
-                      this.timer = setTimeout(this.closeNotification, newNotification.timeout)
-                    }
-                }
-            },
-            immediate: true
+        return utilities.getNotification.colorClass || colors[utilities.getNotification.type] || 'text-orange-lighten-1'
+    }
+})
+
+watch(notification, (newValue) => {
+    if (!newValue) {
+        utilities.resetNotification()
+        if (progressTimer.value) {
+            clearTimeout(progressTimer.value)
         }
     }
-}
-</script> -->
+})
+utilities.$onAction(({ name, args }) => {
+    if (name === 'setNotification') {
+        notification.value = true
+        if (progressTimer.value) {
+            clearTimeout(progressTimer.value)
+        }
+        progress.value = 100
+        progressDecrement.value = 100 / args[0].timeout * progressTimeoutMS.value * 1.15 // increment per millisecond
+        progressTimer.value = setTimeout(makeSingleDecrement, progressTimeoutMS.value)
+    }
+})
+</script>
 
 <style>
-
-.no-transition .v-progress-circular__overlay {
-  transition: all 0.01s ease-in-out;
-}
-
 </style>

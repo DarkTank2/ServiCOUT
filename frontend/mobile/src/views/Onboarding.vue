@@ -70,9 +70,6 @@
     </v-container>
 </template>
 <script setup lang="ts">
-    import { useUsersettings } from '@/store/usersettings-store'
-    import { useRouter } from 'vue-router'
-
     const usersettings = useUsersettings()
     const router = useRouter()
 

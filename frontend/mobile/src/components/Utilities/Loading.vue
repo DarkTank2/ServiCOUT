@@ -1,9 +1,8 @@
 <template>
-    <v-overlay :value="utilities.fetchPending">
-        <v-progress-circular indeterminate></v-progress-circular>
+    <v-overlay :model-value="utilities.fetchPending" class="align-center justify-center">
+        <v-progress-circular color="primary" indeterminate size="64"></v-progress-circular>
     </v-overlay>
 </template>
 <script setup lang="ts">
-import { useUtilityStore } from '../../store/utility-store'
 let utilities = useUtilityStore()
 </script>

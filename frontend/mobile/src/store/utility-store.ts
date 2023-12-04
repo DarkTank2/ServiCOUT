@@ -1,16 +1,16 @@
 import { defineStore } from "pinia"
 
-interface Notification {
+type Notification = {
     message: string,
     icon?: string,
     colorClass?: string,
-    type: ['success', 'error'],
+    type: 'success' | 'error',
     timeout: number
 }
 
 export const useUtilityStore = defineStore('utilities', () => {
     const fetchPending = ref(false)
-    const notification = ref<Notification | null>(null)
+    const notification = ref<Notification>({ message: '', type: 'success', timeout: 0 })
 
     const isFetchPending = computed(() => fetchPending.value)
     const getNotification = computed(() => notification.value)
@@ -26,7 +26,7 @@ export const useUtilityStore = defineStore('utilities', () => {
         notification.value = value
     }
     function resetNotification () {
-        notification.value = null
+        notification.value = { message: '', type: 'success', timeout: 0 }
     }
 
     return {

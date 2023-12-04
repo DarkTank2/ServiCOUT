@@ -4,7 +4,7 @@
       <template v-if="meta.titleReplacement">
         <component :is="meta.titleReplacement" />
       </template>
-      <!-- <v-toolbar-title v-else>{{ env ? env.occasion : 'Loading...' }}</v-toolbar-title> -->
+      <v-toolbar-title v-else>{{ tenant.length > 0 ? tenant[0].currentEventName : 'Loading...' }}</v-toolbar-title>
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
       <component v-if="meta.appBarComponent" :is="meta.appBarComponent" />
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
@@ -17,31 +17,31 @@
       app
       temporary
       bottom
-      v-if="meta.bottomNavbarComponent"
+      v-if="meta.bottomComponent"
       >
-      <component :is="meta.bottomNavbarComponent" @closeNavbar="bottomNav = false" />
+      <component :is="meta.bottomComponent" @closeNavbar="bottomNav = false" />
     </v-navigation-drawer> -->
     <v-main :style="mainStyle">
       <router-view/>
-      <!-- <v-btn
-            v-if="meta.bottomNavbarComponent"
+      <v-btn
+            v-if="meta.bottomComponent"
             elevation="2"
-            fab
-            fixed
-            bottom
-            right
-            @click="bottomNav = true"
-            style="bottom: 70px !important;"
+            position="absolute"
+            style="bottom: 66px !important; right: 10px !important;"
+            class="text-none"
+            icon
             >
             <v-badge
               bordered
               :content="badgeContent"
-              :value="badgeContent"
+              :model-value="badgeContent ? true : false"
               :color="badgeColor"
+              offset-y="-8"
+              offset-x="-2"
               >
-                <v-icon>shopping_cart</v-icon>
+                <v-icon>mdi-cart-outline</v-icon>
             </v-badge>
-      </v-btn> -->
+      </v-btn>
       <loading />
       <notification />
     </v-main>
@@ -80,14 +80,18 @@
   // }, 1000)
   // import { onMounted } from 'vue'
   
-  // const authStore = useAuthStore()
-  // authStore.authenticate({ strategy: 'local', email: 'x.s@gmx.at', password: '1234' })
-  // onMounted(async () => {
-  //   const { api } = useFeathers()
-  //   await api.service('sizes').find({ query: {} })
-  //   console.log(api.service('sizes').findInStore({ query: {} }).data)
+  const authStore = useAuthStore()
+  authStore.authenticate({ strategy: 'local', email: 'x.s@gmx.at', password: '1234' })
+  const { api } = useFeathers()
+  onMounted(async () => {
+    await api.service('tenants').find({ query: {} })
+    api.service('base-items').find()
+    api.service('sizes').find()
+    api.service('options').find()
+    api.service('flavours').find()
+    api.service('items').find()
+  })
     
-  // })
   const route = useRoute()
   const meta = computed(() => {
     return route.meta
@@ -95,4 +99,33 @@
   const mainStyle = computed(() => {
     return `padding: ${meta.value.extension ? '104' : '56'}px 0px 0px;`
   })
+  const tenantQuery = computed(() => {
+    return { query: { id: 2 } }
+  })
+  const { data: tenant } = toRefs(api.service('tenants').findInStore(tenantQuery))
+  let rawOrderQuery = computed(() => {
+    return { query: { __isTemp: true }, temps: true }
+  })
+  const { data: rawOrder } = toRefs(api.service('ordered-items').findInStore(rawOrderQuery))
+  const allCartItemsAvailable = computed(() => {
+    let flag = true
+    rawOrder.value.forEach(orderedItem => {
+      let item = api.service('items').findInStore({ query: { id: orderedItem.itemId! } }).data[0]
+      let baseItem = api.service('base-items').findInStore({ query: { id: item.baseItemId! } }).data[0]
+      flag &&= baseItem.available!
+    })
+    return flag
+  })
+    
+
+  const badgeContent = computed(() => {
+    return allCartItemsAvailable.value ? rawOrder.value.reduce((acc, val) => acc + val.quantity!, 0) : '!'
+  })
+  const badgeColor = computed(() => {
+    return allCartItemsAvailable.value ? 'green' : 'error'
+  })
+
+  // setTimeout(() => {
+  //   api.service('ordered-items').createInStore({ itemId: 1, quantity: 2, tenantId: tenant.value[0].id!, waiter: 'Test', tableId: 1 })
+  // }, 5000)
 </script>

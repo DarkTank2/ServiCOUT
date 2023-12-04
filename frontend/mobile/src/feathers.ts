@@ -44,6 +44,7 @@ export const api = createPiniaClient(feathersClient, {
             })
             return withDefaults as typeof withDefaults & { orderedItemTempId: string }
           },
-        }
+        },
+        tenants: {}
     },
   })

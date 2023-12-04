@@ -26,7 +26,7 @@ export const itemsResolver = resolve<Items, HookContext<ItemsService>>({})
 export const itemsExternalResolver = resolve<Items, HookContext<ItemsService>>({})
 
 // Schema for creating new entries
-export const itemsDataSchema = Type.Pick(itemsSchema, ['price', 'default', 'baseItemId', 'sizeId', 'flavourId'], {
+export const itemsDataSchema = Type.Pick(itemsSchema, ['id', 'price', 'default', 'baseItemId', 'sizeId', 'flavourId'], {
   $id: 'ItemsData'
 })
 export type ItemsData = Static<typeof itemsDataSchema>
@@ -42,7 +42,7 @@ export const itemsPatchValidator = getValidator(itemsPatchSchema, dataValidator)
 export const itemsPatchResolver = resolve<Items, HookContext<ItemsService>>({})
 
 // Schema for allowed query properties
-export const itemsQueryProperties = Type.Pick(itemsSchema, ['price', 'default', 'baseItemId', 'sizeId', 'flavourId'])
+export const itemsQueryProperties = Type.Pick(itemsSchema, ['id', 'price', 'default', 'baseItemId', 'sizeId', 'flavourId'])
 export const itemsQuerySchema = Type.Intersect(
   [
     querySyntax(itemsQueryProperties),

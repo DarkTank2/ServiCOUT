@@ -12,19 +12,16 @@ const routes = [
     redirect: (_to: any) => {
       let usersettings = useUsersettings()
       if (usersettings.onboarded) {
-        return 'Home'
+        return { name: 'Home' }
       } else {
-        return 'Onboarding'
+        return { name: 'Onboarding' }
       }
     }
   },
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/views/Home.vue'),
-    meta: {
-      bottomComponent: ShoppingCart
-    }
+    component: () => import('@/views/Home.vue')
   },
   {
     path: '/onboarding',
@@ -34,7 +31,25 @@ const routes = [
   {
     path: '/order',
     name: 'Order',
-    component: () => import('@/views/Order.vue')
+    component: () => import('@/views/Order.vue'),
+    meta: {
+      bottomComponent: ShoppingCart
+    },
+    beforeEnter: (_to: any, _from: any) => {
+      const usersettings = useUsersettings()
+      if (!usersettings.getName) { // includes null and empty strings
+        return { name: 'EnterName' }
+      }
+      return true
+    }
+  },
+  {
+    path: '/enter-name',
+    name: 'EnterName',
+    component: () => import('@/views/NameInput.vue'),
+    meta: {
+      bottomComponent: ShoppingCart
+    }
   }
 ]
 

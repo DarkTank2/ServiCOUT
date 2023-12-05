@@ -20,7 +20,11 @@ export const useUsersettings = defineStore('usersettings', () => {
 
     const setName = function (value: string) {
         name.value = value
-        window.localStorage.setItem('userName', value)
+        if (!value) {
+            window.localStorage.removeItem('userName')
+        } else {
+            window.localStorage.setItem('userName', value)
+        }
     }
     const setTableId = function (value: number) {
         tableId.value = value

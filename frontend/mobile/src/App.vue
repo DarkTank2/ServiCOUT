@@ -12,16 +12,13 @@
         <component :is="meta.extension" />
       </template>
     </v-app-bar>
-    <!-- <v-navigation-drawer
-      v-model="bottomNav"
-      app
-      temporary
-      bottom
+    <v-bottom-sheet
+      v-model="bottomComponentModel"
       v-if="meta.bottomComponent"
       >
-      <component :is="meta.bottomComponent" @closeNavbar="bottomNav = false" />
-    </v-navigation-drawer> -->
-    <v-main :style="mainStyle">
+      <component :is="meta.bottomComponent" @closeBottomComponent="bottomComponentModel = false" />
+    </v-bottom-sheet>
+    <v-main>
       <router-view/>
       <v-btn
             v-if="meta.bottomComponent"
@@ -30,6 +27,7 @@
             style="bottom: 66px !important; right: 10px !important;"
             class="text-none"
             icon
+            @click="bottomComponentModel = true"
             >
             <v-badge
               bordered
@@ -56,10 +54,6 @@
         
         <span>Kassieren</span>
       </v-btn>
-      <!-- <v-btn :to="{ name: 'TableSelection' }" >
-        <span class="ml-2">Kassieren</span>
-        <v-icon>euro_symbol</v-icon>
-      </v-btn> -->
     </v-bottom-navigation>
   </v-app>
 </template>
@@ -67,18 +61,8 @@
 <script lang="ts" setup>
   import Notification from './components/Utilities/Notification.vue';
   import Loading from './components/Utilities/Loading.vue';
-  
-  // const { setNotification, setFetchPending, resetFetchPending } = useUtilityStore()
-  // setTimeout(() => {
-  //   setNotification({ message: 'Test notification', timeout: 5000, type: 'success' })
-  //   setTimeout(() => {
-  //     setFetchPending()
-  //   }, 6000)
-  //   setTimeout(() => {
-  //     resetFetchPending()
-  //   }, 9000)
-  // }, 1000)
-  // import { onMounted } from 'vue'
+
+  const bottomComponentModel = ref(false)
   
   const authStore = useAuthStore()
   authStore.authenticate({ strategy: 'local', email: 'x.s@gmx.at', password: '1234' })
@@ -124,8 +108,4 @@
   const badgeColor = computed(() => {
     return allCartItemsAvailable.value ? 'green' : 'error'
   })
-
-  // setTimeout(() => {
-  //   api.service('ordered-items').createInStore({ itemId: 1, quantity: 2, tenantId: tenant.value[0].id!, waiter: 'Test', tableId: 1 })
-  // }, 5000)
 </script>

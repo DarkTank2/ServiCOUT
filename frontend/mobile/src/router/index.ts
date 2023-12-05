@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { Component } from 'vue'
 
 import ShoppingCart from '@/components/BottomComponents/ShoppingCart.vue'
+import OrderExtension from '@/components/AppBarExtensions/OrderExtension.vue'
 
 const routes = [
   {
@@ -33,7 +34,8 @@ const routes = [
     name: 'Order',
     component: () => import('@/views/Order.vue'),
     meta: {
-      bottomComponent: ShoppingCart
+      bottomComponent: ShoppingCart,
+      extension: OrderExtension
     },
     beforeEnter: (_to: any, _from: any) => {
       const usersettings = useUsersettings()

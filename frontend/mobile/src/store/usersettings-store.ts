@@ -28,7 +28,11 @@ export const useUsersettings = defineStore('usersettings', () => {
     }
     const setTableId = function (value: number) {
         tableId.value = value
-        window.localStorage.setItem('tableId', value.toString())
+        if (!value) {
+            window.localStorage.removeItem('tableId')
+        } else {
+            window.localStorage.setItem('tableId', value.toString())
+        }
     }
     const finalizeOnboarding = function () {
         let now = moment().format()

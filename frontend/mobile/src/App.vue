@@ -23,7 +23,7 @@
       <v-btn
             v-if="meta.bottomComponent"
             elevation="2"
-            position="absolute"
+            position="fixed"
             style="bottom: 66px !important; right: 10px !important;"
             class="text-none"
             icon

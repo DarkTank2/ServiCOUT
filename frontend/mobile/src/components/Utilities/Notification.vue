@@ -3,6 +3,7 @@
         v-model="notification"
         :timeout="utilities.getNotification.timeout"
         rounded="lg"
+        theme="light"
         >
         <v-progress-linear v-model="progress" absolute top :color="utilities.getNotification.type"></v-progress-linear>
         <span v-text="utilities.getNotification.message" :class="colorClass"></span>

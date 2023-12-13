@@ -39,7 +39,7 @@ const routes = [
     },
     beforeEnter: (_to: any, _from: any) => {
       const usersettings = useUsersettings()
-      if (!usersettings.getName) { // includes null and empty strings
+      if (!usersettings.getName || !usersettings.getTableId) { // includes null and empty strings
         return { name: 'EnterName' }
       }
       return true
@@ -48,16 +48,26 @@ const routes = [
   {
     path: '/enter-name',
     name: 'EnterName',
-    component: () => import('@/views/NameInput.vue'),
-    meta: {
-      bottomComponent: ShoppingCart
-    }
+    component: () => import('@/views/NameInput.vue')
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }else if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+        top: to.meta.extension ? 132 : 84
+      }
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 export default router

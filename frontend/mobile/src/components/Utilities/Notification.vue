@@ -11,7 +11,7 @@
             <v-btn
                 color="red"
                 icon
-                @click="notification = false"
+                @click.stop="notification = false"
                 >
                 <v-icon>mdi-close</v-icon>
             </v-btn>

@@ -38,17 +38,20 @@
                     </v-list-item>
                     <v-divider></v-divider>
                     <span class="text-body-1">Variationen:</span>
-                    <v-radio-group v-model="flavourId" density="compact" :error-messages="selectedItem ? null : 'Ungültige Kombination!'">
+                    <v-radio-group v-model="flavourId" density="compact"
+                        :error-messages="selectedItem ? null : 'Ungültige Kombination!'">
                         <v-radio v-for="flavour in flavours" :key="`flavour_id_${flavour.id}_base_item_id_${baseItem.id}`"
                             :value="flavour.id">
                             <template #label>
-                                <span :class="{ 'text-success': possibleFlavours.includes(flavour.id) }">{{ flavour.name }}</span>
+                                <span :class="{ 'text-success': possibleFlavours.includes(flavour.id) }">{{ flavour.name
+                                }}</span>
                             </template>
                         </v-radio>
                     </v-radio-group>
                     <v-divider></v-divider>
                     <span class="text-body-1">Größen:</span>
-                    <v-radio-group v-model="sizeId" density="compact" :error-messages="selectedItem ? null : 'Ungültige Kombination!'">
+                    <v-radio-group v-model="sizeId" density="compact"
+                        :error-messages="selectedItem ? null : 'Ungültige Kombination!'">
                         <v-radio v-for="size in sizes" :key="`size_id_${size.id}_base_item_id_${baseItem.id}`"
                             :value="size.id">
                             <template #label>
@@ -56,11 +59,15 @@
                             </template>
                         </v-radio>
                     </v-radio-group>
+                    <v-divider></v-divider>
+                    <v-textarea label="Kommentar" v-model="comment" hint="Füge diesem Item ein Kommentar hinzu."
+                        variant="outlined" density="compact" clearable class="py-5" />
                     <!-- <v-divider></v-divider>
                     <span class="text-body-1">Optionen:</span> -->
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn block elevation="2" variant="outlined" rounded :disabled="!selectedItem" @click.stop="addToOrder">
+                    <v-btn block elevation="2" variant="outlined" rounded :disabled="!selectedItem"
+                        @click.stop="addToOrder">
                         Zur Bestellung hinzufügen
                         <v-icon icon="mdi-cart-plus"></v-icon>
                     </v-btn>
@@ -73,6 +80,11 @@
 import { CSSProperties } from 'vue';
 import colors from 'vuetify/util/colors'
 
+const { api } = useFeathers()
+const usersettings = useUsersettings()
+const auth = useAuthStore()
+const utilities = useUtilityStore()
+
 const props = defineProps<{
     itemId: number,
     style?: CSSProperties,
@@ -82,7 +94,8 @@ const dialogModel = ref(false)
 const amount = ref(1)
 const sizeId = ref<number | null>(null)
 const flavourId = ref<number | null>(null)
-const { api } = useFeathers()
+const comment = ref<string | undefined>(undefined)
+
 const { data: baseItems } = toRefs(api.service('base-items').findInStore(ref({ query: { id: props.itemId } })))
 const baseItem = computed(() => baseItems.value[0])
 
@@ -136,6 +149,7 @@ const updateDialog = function (modelValue: boolean) {
         amount.value = 1
         flavourId.value = defaultItem.value?.flavourId!
         sizeId.value = defaultItem.value?.sizeId!
+        comment.value = undefined
     }
 }
 const increment = function () {
@@ -148,19 +162,34 @@ const decrement = function () {
     }
 }
 
-const usersettings = useUsersettings()
-const auth = useAuthStore()
-const utilities = useUtilityStore()
 const addToOrder = function () {
-    api.service('ordered-items').createInStore({ 
-        itemId: selectedItem.value?.id!,
-        quantity: amount.value,
-        waiter: usersettings.getName!,
-        tableId: usersettings.getTableId!,
-        tenantId: auth.user.tenantId as number
-    })
+    let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
+        query: {
+            itemId: selectedItem.value?.id!,
+            waiter: usersettings.getName!,
+            tableId: usersettings.getTableId!,
+            tenantId: auth.user.tenantId as number,
+            __isTemp: true
+        },
+        temps: true
+    })).data
+    // comment is not query-able as of ritgh now, mybe change in future at backend and add it to query here
+    if (alreadyFoundItem[0] && alreadyFoundItem[0].comment === comment.value) {
+        let clone = alreadyFoundItem[0].clone()
+        clone.quantity! += amount.value
+        clone.commit()
+    } else {
+        api.service('ordered-items').createInStore({
+            itemId: selectedItem.value?.id!,
+            quantity: amount.value,
+            waiter: usersettings.getName!,
+            tableId: usersettings.getTableId!,
+            tenantId: auth.user.tenantId as number,
+            comment: comment.value
+        })
+    }
     dialogModel.value = false
     updateDialog(false)
-    utilities.setNotification({ message: `${amount.value} x ${baseItem.value.name} wurde erfolgreich zur Bestellung hinzugefügt!`, timeout: 3000, type: 'success' })
+    // utilities.setNotification({ message: `${amount.value} x ${baseItem.value.name} wurde erfolgreich zur Bestellung hinzugefügt!`, timeout: 3000, type: 'success' })
 }
 </script>

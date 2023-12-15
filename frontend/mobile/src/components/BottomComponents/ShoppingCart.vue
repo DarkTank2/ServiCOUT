@@ -59,6 +59,8 @@
     </v-card>
 </template>
 <script setup lang="ts">
+import moment from 'moment';
+
 const emit = defineEmits<{
     closeBottomComponent: []
 }>()
@@ -134,7 +136,14 @@ const updateTable = function (newTableId: number) {
 }
 const finishOrder = async function () {
     utilities.setFetchPending()
+    // forcing a sync on FE side since I have not figured out how to properly sync them at backend side, when i have a list of 
+    // temporary instances
+    // i specifically dont want to go the way with extracting the information of each and every temp instance and sending the 
+    // raw data to the backend as an array of data, when i already have all the data in the store,
+    // yet there is no method to save multiple instances and send them in one request
+    let now = moment().format()
     for (const orderedItem of rawOrder.value) {
+        orderedItem.createdAt = now
         await orderedItem.save()
     }
     utilities.resetFetchPending()

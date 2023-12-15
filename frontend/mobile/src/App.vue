@@ -51,7 +51,7 @@
         
         <span>Bestellen</span>
       </v-btn>
-      <v-btn :to="{ name: 'Order' }">
+      <v-btn :to="{ name: 'Cash/AllTables' }">
         <v-icon>mdi-cash-multiple</v-icon>
         
         <span>Kassieren</span>

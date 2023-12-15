@@ -49,6 +49,18 @@ const routes = [
     path: '/enter-name',
     name: 'EnterName',
     component: () => import('@/views/NameInput.vue')
+  },
+  {
+    path: '/cash',
+    name: 'Cash',
+    component: () => import('@/views/Cash.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Cash/AllTables',
+        component: () => import('@/components/Cash/AllTables.vue')
+      }
+    ]
   }
 ]
 

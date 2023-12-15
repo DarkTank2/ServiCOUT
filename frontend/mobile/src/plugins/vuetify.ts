@@ -25,11 +25,9 @@ export default createVuetify({
     },
   },
   defaults: {
-    VTextField: {
-      outlined: true,
-      density: 'compact',
-      clearable: true,
-      hideDetails: 'auto'
+    VBtn: {
+      variant: 'outlined',
+      density: 'compact'
     }
   }
 })

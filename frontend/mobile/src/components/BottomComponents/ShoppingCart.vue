@@ -1,6 +1,10 @@
 <template>
     <v-card>
-        <v-system-bar window :style="{ top: '0px' }">
+        <v-system-bar window :style="{ top: '0px', backgroundColor: 'rgb(var(--v-theme-surface))' }" v-touch="{ down: () => { emit('closeBottomComponent') } }">
+            <v-btn icon class="ms-2" :style="{ backgroundColor: 'transparent', boxShadow: 'none' }"></v-btn>
+            <v-spacer></v-spacer>
+            <div class="indicator" :style="{ transform: 'rotateZ(10deg) translateX(1.5px)' }" @click.stop="emit('closeBottomComponent')"></div>
+            <div class="indicator" :style="{ transform: 'rotateZ(-10deg) translateX(-1.5px)' }" @click.stop="emit('closeBottomComponent')"></div>
             <v-spacer></v-spacer>
             <v-btn icon="mdi-close" variant="text" class="ms-2" @click.stop="emit('closeBottomComponent')"></v-btn>
         </v-system-bar>
@@ -138,3 +142,13 @@ const finishOrder = async function () {
     emit('closeBottomComponent')
 }
 </script>
+<style>
+.indicator {
+    border-radius: 5px;
+    width: 20px;
+    height: 10%;
+    background-color: rgb(114, 114, 114);
+    margin-top: 8px;
+    margin-bottom: auto;
+}
+</style>

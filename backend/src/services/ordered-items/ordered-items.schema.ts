@@ -14,10 +14,10 @@ export const orderedItemsSchema = Type.Object(
     quantity: Type.Integer(),
     finished: Type.Optional(Type.Boolean()),
     cashed: Type.Optional(Type.Integer()),
-    waiter: Type.String(),
+    fullyCashed: Type.Optional(Type.Boolean()),
     comment: Type.Optional(Type.String()),
     itemId: Type.Integer(),
-    tableId: Type.Integer(),
+    orderId: Type.Integer(),
     tenantId: Type.Integer(),
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' }))
@@ -31,7 +31,7 @@ export const orderedItemsResolver = resolve<OrderedItems, HookContext<OrderedIte
 export const orderedItemsExternalResolver = resolve<OrderedItems, HookContext<OrderedItemsService>>({})
 
 // Schema for creating new entries
-export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'finished', 'cashed', 'waiter', 'comment', 'itemId', 'tableId', 'tenantId', 'createdAt', 'updatedAt'], {
+export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'finished', 'cashed', 'fullyCashed', 'comment', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'], {
   $id: 'OrderedItemsData'
 })
 export type OrderedItemsData = Static<typeof orderedItemsDataSchema>
@@ -47,7 +47,7 @@ export const orderedItemsPatchValidator = getValidator(orderedItemsPatchSchema, 
 export const orderedItemsPatchResolver = resolve<OrderedItems, HookContext<OrderedItemsService>>({})
 
 // Schema for allowed query properties
-export const orderedItemsQueryProperties = Type.Pick(orderedItemsSchema, ['id', 'finished', 'cashed', 'waiter', 'itemId', 'tableId', 'tenantId', 'createdAt', 'updatedAt'])
+export const orderedItemsQueryProperties = Type.Pick(orderedItemsSchema, ['id', 'finished', 'cashed', 'fullyCashed', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'])
 export const orderedItemsQuerySchema = Type.Intersect(
   [
     querySyntax(orderedItemsQueryProperties),

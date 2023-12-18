@@ -1,3 +1,4 @@
+import { orders } from './orders/orders'
 import { roles } from './roles/roles'
 import { orderedItems } from './ordered-items/ordered-items'
 import { itemsHaveOptions } from './items-have-options/items-have-options'
@@ -15,6 +16,7 @@ import { user } from './users/users'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(orders)
   app.configure(roles)
   app.configure(orderedItems)
   app.configure(itemsHaveOptions)

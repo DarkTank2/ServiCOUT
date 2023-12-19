@@ -4,12 +4,12 @@
       <template v-if="meta.titleReplacement">
         <component :is="meta.titleReplacement" />
       </template>
-      <v-toolbar-title v-else>{{ tenant.length > 0 ? tenant[0].currentEventName : 'Loading...' }}</v-toolbar-title>
+      <v-toolbar-title v-else>{{ tenant?.currentEventName || 'Loading...' }}</v-toolbar-title>
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
       <component v-if="meta.appBarComponent" :is="meta.appBarComponent" />
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
       <template v-slot:extension v-if="meta.extension">
-        <component :is="meta.extension" />
+        <component :is="meta.extension" :key="`${route.path}_extension`"/>
       </template>
     </v-app-bar>
     <v-bottom-sheet
@@ -17,11 +17,16 @@
       v-if="meta.bottomComponent"
       scrollable
       max-height="80%"
+      persistent
       >
       <component :is="meta.bottomComponent" @closeBottomComponent="bottomComponentModel = false" />
     </v-bottom-sheet>
     <v-main>
-      <router-view/>
+      <router-view v-slot="{ Component, route }" v-if="authStore.isInitDone">
+        <transition :name="route.meta.transition" mode="out-in">
+          <component :is="Component" :key="route.path" />
+        </transition>
+      </router-view>
       <v-btn
             v-if="meta.bottomComponent"
             elevation="2"
@@ -67,40 +72,36 @@
   const bottomComponentModel = ref(false)
   
   const authStore = useAuthStore()
-  authStore.authenticate({ strategy: 'local', email: 'x.s@gmx.at', password: '1234' })
+  authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
   const { api } = useFeathers()
-  onMounted(async () => {
-    await api.service('tenants').find({ query: {} })
+  const interval = setInterval(() => {
+    api.service('tenants').find({ query: { id: 2 } })
+    api.service('tables').find()
     api.service('base-items').find()
     api.service('sizes').find()
     api.service('options').find()
     api.service('flavours').find()
     api.service('items').find()
+  }, 3000)
+  onBeforeUnmount(() => {
+    clearInterval(interval)
   })
     
   const route = useRoute()
   const meta = computed(() => {
     return route.meta
   })
-  const mainStyle = computed(() => {
-    return `padding: ${meta.value.extension ? '104' : '56'}px 0px 0px;`
-  })
-  const tenantQuery = computed(() => {
-    return { query: { id: 2 } }
-  })
-  const { data: tenant } = toRefs(api.service('tenants').findInStore(tenantQuery))
+  const tenant = api.service('tenants').getFromStore(ref(2))
   let rawOrderQuery = computed(() => {
     return { query: { __isTemp: true }, temps: true }
   })
   const { data: rawOrder } = toRefs(api.service('ordered-items').findInStore(rawOrderQuery))
   const allCartItemsAvailable = computed(() => {
-    let flag = true
-    rawOrder.value.forEach(orderedItem => {
+    return rawOrder.value.every(orderedItem => {
       let item = api.service('items').findInStore({ query: { id: orderedItem.itemId! } }).data[0]
       let baseItem = api.service('base-items').findInStore({ query: { id: item.baseItemId! } }).data[0]
-      flag &&= baseItem.available!
+      return baseItem.available
     })
-    return flag
   })
     
 
@@ -111,3 +112,37 @@
     return allCartItemsAvailable.value ? 'green' : 'error'
   })
 </script>
+<style>
+.swipe-right-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.swipe-right-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.swipe-right-enter-from {
+  transform: translateX(20px);
+  opacity: 0;
+}
+.swipe-right-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+.swipe-left-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.swipe-left-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.swipe-left-enter-from {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+.swipe-left-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+</style>

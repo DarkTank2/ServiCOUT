@@ -8,8 +8,11 @@
 <script setup lang="ts">
 import SingleCategory from '@/components/Order/SingleCategory.vue';
 const { api } = useFeathers()
-const categoryService = api.service('categories')
-categoryService.find()
-
-const { data: categories } = toRefs(categoryService.findInStore(ref({ query: {} })))
+const interval = setInterval(() => {
+    api.service('categories').find()
+}, 3000)
+onBeforeUnmount(() => {
+    clearInterval(interval)
+})
+const { data: categories } = toRefs(api.service('categories').findInStore(ref({ query: {} })))
 </script>

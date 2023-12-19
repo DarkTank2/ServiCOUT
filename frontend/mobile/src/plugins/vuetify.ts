@@ -24,10 +24,5 @@ export default createVuetify({
       },
     },
   },
-  defaults: {
-    VBtn: {
-      variant: 'outlined',
-      density: 'compact'
-    }
-  }
+  defaults: {}
 })

@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialogModel" fullscreen scrollable :scrim="false" @update:model-value="updateDialog">
         <template #activator="{ props }">
-            <v-card v-bind="props" :style="style" :disabled="props.disabled">
+            <v-card v-bind="props" :style="style" :disabled="props.disabled || !baseItem.available">
                 <v-card-text class="text-center mx-auto">
                     {{ `${baseItem.name}` }}
                     <br />
@@ -83,7 +83,7 @@ import colors from 'vuetify/util/colors'
 const { api } = useFeathers()
 const usersettings = useUsersettings()
 const auth = useAuthStore()
-const utilities = useUtilityStore()
+// const utilities = useUtilityStore()
 
 const props = defineProps<{
     itemId: number,
@@ -96,8 +96,7 @@ const sizeId = ref<number | null>(null)
 const flavourId = ref<number | null>(null)
 const comment = ref<string | undefined>(undefined)
 
-const { data: baseItems } = toRefs(api.service('base-items').findInStore(ref({ query: { id: props.itemId } })))
-const baseItem = computed(() => baseItems.value[0])
+const baseItem = api.service('base-items').getFromStore(toRef(props.itemId))
 
 const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: baseItem.value.id } }))))
 let sizesQuery = computed(() => ({
@@ -137,9 +136,12 @@ const selectedItem = computed(() => {
 })
 
 const style = computed(() => {
-    let _style: CSSProperties = props.style || {}
+    let _style: CSSProperties = {}
+    if (props.style) {
+        Object.assign(_style, props.style)
+    }
     if (!baseItem.value.available) {
-        _style.background = colors.grey.lighten2
+        _style.background = colors.grey.base
     }
     return _style
 })
@@ -163,6 +165,7 @@ const decrement = function () {
 }
 
 const addToOrder = function () {
+    // ref needed otherwise __isTemp property cannot be queried
     let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
         query: {
             itemId: selectedItem.value?.id!,
@@ -182,10 +185,9 @@ const addToOrder = function () {
         api.service('ordered-items').createInStore({
             itemId: selectedItem.value?.id!,
             quantity: amount.value,
-            waiter: usersettings.getName!,
-            tableId: usersettings.getTableId!,
             tenantId: auth.user.tenantId as number,
-            comment: comment.value
+            comment: comment.value,
+            orderId: 0 // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized
         })
     }
     dialogModel.value = false

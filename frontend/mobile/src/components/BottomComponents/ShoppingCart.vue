@@ -12,7 +12,7 @@
         <v-card-text :style="{ padding: 0 }">
             <v-list>
                 <v-list-item v-for="orderedItem in modifiedOrder" density="compact"
-                    :lines="orderedItem.orderedItem.comment ? 'three' : 'two'">
+                    :lines="orderedItem.orderedItem.comment ? 'three' : 'two'" :class="{ bordered: !orderedItem.baseItem.available }">
                     <v-list-item-title>
                         {{ orderedItem.baseItem.name }}
                         <span class="ml-2">{{ `( à ${orderedItem.item.price}€ )` }}</span>
@@ -30,7 +30,7 @@
                         <v-btn icon="mdi-minus" @click.stop="decrementOrderedItem(orderedItem.orderedItem.__tempId)"></v-btn>
                         <v-btn variant="outlined" rounded disabled class="text-white" :style="{ opacity: 1 }">{{
                             orderedItem.orderedItem.quantity }}</v-btn>
-                        <v-btn icon="mdi-plus" @click.stop="incrementOrderedItem(orderedItem.orderedItem.__tempId)"></v-btn>
+                        <v-btn icon="mdi-plus" @click.stop="incrementOrderedItem(orderedItem.orderedItem.__tempId)" :disabled="!orderedItem.baseItem.available"></v-btn>
                     </template>
                 </v-list-item>
                 <v-list-item v-if="modifiedOrder.length === 0">
@@ -42,12 +42,12 @@
                 <v-divider></v-divider>
                 <v-divider></v-divider>
                 <v-list-item>
-                    <v-text-field :model-value="usersettings.getName" @update:model-value="updateName" label="Dein Name"
+                    <v-text-field :model-value="usersettings.getName" @update:model-value="usersettings.setName" label="Dein Name"
                         :rules="[(v) => !!v || 'Notwendig!']" variant="outlined" density="compact" hide-details="auto"
                         clearable prepend-icon="mdi-account" class="mt-1"></v-text-field>
                 </v-list-item>
                 <v-list-item>
-                    <v-select :items="tables" :model-value="usersettings.getTableId" @update:model-value="updateTable"
+                    <v-select :items="tables" :model-value="usersettings.getTableId" @update:model-value="usersettings.setTableId"
                         label="Tischnummer" :rules="[(v) => !!v || 'Notwendig!']" variant="outlined" density="compact"
                         hide-details="auto" item-title="name" item-value="id" prepend-icon="mdi-table-chair" class="mt-1"></v-select>
                 </v-list-item>
@@ -67,6 +67,7 @@ const emit = defineEmits<{
 const { api } = useFeathers()
 const usersettings = useUsersettings()
 const utilities = useUtilityStore()
+const auth = useAuthStore()
 api.service('tables').find({ query: {} })
 const { data: tables } = toRefs(api.service('tables').findInStore(ref({ query: {} })))
 const { data: rawOrder } = toRefs(api.service('ordered-items').findInStore(ref({ query: { __isTemp: true }, temps: true })))
@@ -120,20 +121,6 @@ const decrementOrderedItem = function (orderedItemId: string) {
         clone.commit()
     }
 }
-const updateName = function (newName: string) {
-    usersettings.setName(newName)
-    clonedRawOrder.value.forEach(orderedItem => {
-        orderedItem.waiter = newName
-        orderedItem.commit()
-    })
-}
-const updateTable = function (newTableId: number) {
-    usersettings.setTableId(newTableId)
-    clonedRawOrder.value.forEach(orderedItem => {
-        orderedItem.tableId = newTableId
-        orderedItem.commit()
-    })
-}
 const finishOrder = async function () {
     utilities.setFetchPending()
     // forcing a sync on FE side since I have not figured out how to properly sync them at backend side, when i have a list of 
@@ -141,9 +128,9 @@ const finishOrder = async function () {
     // i specifically dont want to go the way with extracting the information of each and every temp instance and sending the 
     // raw data to the backend as an array of data, when i already have all the data in the store,
     // yet there is no method to save multiple instances and send them in one request
-    let now = moment().format()
+    let order = await api.service('orders').create({ waiter: usersettings.getName!, tableId: usersettings.getTableId!, tenantId: auth.user.tenantId as number })
     for (const orderedItem of rawOrder.value) {
-        orderedItem.createdAt = now
+        orderedItem.orderId = order.id
         await orderedItem.save()
     }
     utilities.resetFetchPending()
@@ -159,5 +146,11 @@ const finishOrder = async function () {
     background-color: rgb(114, 114, 114);
     margin-top: 8px;
     margin-bottom: auto;
+}
+.bordered {
+  border: 2px solid rgb(var(--v-theme-error)) !important;
+  border-radius: 4px !important;
+  margin: 2px 8px !important;
+  padding: 2px 8px !important;
 }
 </style>

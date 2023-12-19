@@ -18,6 +18,8 @@ import type { Application } from '../../declarations'
 import { OrdersService, getOptions } from './orders.class'
 import { ordersPath, ordersMethods } from './orders.shared'
 
+import { logUser } from '../../hooks/log-user'
+
 export * from './orders.class'
 export * from './orders.schema'
 
@@ -48,7 +50,8 @@ export const orders = (app: Application) => {
       remove: []
     },
     after: {
-      all: []
+      all: [],
+      create: [logUser]
     },
     error: {
       all: []

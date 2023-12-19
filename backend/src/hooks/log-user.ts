@@ -3,6 +3,10 @@ import type { HookContext } from '../declarations'
 import { logger } from '../logger'
 
 export const logUser = async (context: HookContext) => {
-  let user = Array.isArray(context.data) ? context.data[0].waiter : context.data.waiter
-  logger.info(`[Log-User] ${user || context.params.user.email} on ${context.path}.${context.method}`)
+  let waiter = Array.isArray(context.data) ? context.data[0].waiter : context.data.waiter
+  let message = `[Log-User] ${waiter || context.params.user.email} on ${context.path}.${context.method}`
+  if (context.type === 'after') {
+    message += ` | ${context.path}.id = ${context.result.id}`
+  }
+  logger.info(message)
 }

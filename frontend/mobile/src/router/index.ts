@@ -5,6 +5,7 @@ import type { Component } from 'vue'
 
 import ShoppingCart from '@/components/BottomComponents/ShoppingCart.vue'
 import OrderExtension from '@/components/AppBarExtensions/OrderExtension.vue'
+import CashExtension from '@/components/AppBarExtensions/CashExtension.vue'
 
 const routes = [
   {
@@ -35,7 +36,8 @@ const routes = [
     component: () => import('@/views/Order.vue'),
     meta: {
       bottomComponent: ShoppingCart,
-      extension: OrderExtension
+      extension: OrderExtension,
+      transition: 'swipe-left'
     },
     beforeEnter: (_to: any, _from: any) => {
       const usersettings = useUsersettings()
@@ -54,11 +56,20 @@ const routes = [
     path: '/cash',
     name: 'Cash',
     component: () => import('@/views/Cash.vue'),
+    meta: {
+      transition: 'swipe-right',
+      extension: CashExtension
+    },
     children: [
       {
         path: '',
         name: 'Cash/AllTables',
         component: () => import('@/components/Cash/AllTables.vue')
+      },
+      {
+        path: ':tableId',
+        name: 'Cash/SingleTable',
+        component: () => import('@/components/Cash/SingleTable.vue')
       }
     ]
   }
@@ -89,6 +100,7 @@ declare module 'vue-router' {
     extension?: Component,
     titleReplacement?: Component,
     appBarComponent?: Component,
-    bottomComponent?: Component
+    bottomComponent?: Component,
+    transition?: string
   }
 }

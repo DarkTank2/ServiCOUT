@@ -12,7 +12,7 @@
         <component :is="meta.extension" :key="`${route.path}_extension`" />
       </template>
     </v-app-bar>
-    <v-bottom-sheet v-model="bottomComponentModel" v-if="meta.bottomComponent" scrollable max-height="80%" persistent>
+    <v-bottom-sheet v-model="bottomComponentModel" v-if="meta.bottomComponent" scrollable max-height="80%">
       <component :is="meta.bottomComponent" @closeBottomComponent="bottomComponentModel = false" />
     </v-bottom-sheet>
     <v-main>

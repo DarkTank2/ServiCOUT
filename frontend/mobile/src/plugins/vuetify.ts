@@ -24,5 +24,9 @@ export default createVuetify({
       },
     },
   },
-  defaults: {}
+  defaults: {
+    VAlert: {
+      variant: 'outlined'
+    }
+  }
 })

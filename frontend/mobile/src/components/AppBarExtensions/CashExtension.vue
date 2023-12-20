@@ -3,7 +3,7 @@
         <v-btn variant="outlined" density="comfortable" prepend-icon="mdi-checkbox-multiple-marked-outline"
             :disabled="route.name !== 'Cash/SingleTable' || allSelected" @click="cashStore.selectAll">Alles</v-btn>
         <v-btn variant="outlined" density="comfortable" prepend-icon="mdi-checkbox-multiple-blank-outline"
-            :disabled="route.name !== 'Cash/SingleTable' || selection.filter(({ amount }) => amount > 0).length === 0" @click="cashStore.deselectAll">Nichts</v-btn>
+            :disabled="route.name !== 'Cash/SingleTable' || emptySelection" @click="cashStore.deselectAll">Nichts</v-btn>
     </v-row>
 </template>
 <script setup lang="ts">
@@ -14,5 +14,8 @@ const allSelected = computed(() => {
 })
 const selection = computed(() => {
     return cashStore.selection.value
+})
+const emptySelection = computed(() => {
+    return selection.value.every(({ items }) => items.length === 0 || items.every(({ amount }) => amount === 0))
 })
 </script>

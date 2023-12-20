@@ -10,8 +10,11 @@
             <v-row justify="end" class="mb-2">
                 <template v-for="{ size, flavour, cashable, item, selected } in items">
                     <v-col cols="9">
-                        <v-list-item :title="`${size?.name} | ${flavour?.name}`" variant="outlined" rounded
+                        <v-list-item variant="outlined" rounded
                             @click="incrementSelection(item.id!, cashable)" :disabled="selected === cashable">
+                            <v-list-item-subtitle style="opacity: 1 !important;">
+                                {{ `${size?.name} | ${flavour?.name} | á ${item.price}€` }}
+                            </v-list-item-subtitle>
                             <template #append>
                                 {{ cashable }}
                             </template>

@@ -6,6 +6,7 @@ import type { Component } from 'vue'
 import ShoppingCart from '@/components/BottomComponents/ShoppingCart.vue'
 import OrderExtension from '@/components/AppBarExtensions/OrderExtension.vue'
 import CashExtension from '@/components/AppBarExtensions/CashExtension.vue'
+import CashComponent from '@/components/AppBarComponents/CashComponent.vue'
 
 const routes = [
   {
@@ -58,7 +59,8 @@ const routes = [
     component: () => import('@/views/Cash.vue'),
     meta: {
       transition: 'swipe-right',
-      extension: CashExtension
+      extension: CashExtension,
+      appBarComponent: CashComponent
     },
     children: [
       {

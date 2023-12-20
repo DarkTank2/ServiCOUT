@@ -10,15 +10,17 @@
             <v-row justify="end" class="mb-2">
                 <template v-for="{ size, flavour, cashable, item, selected } in items">
                     <v-col cols="9">
-                        <v-list-item :title="`${size?.name} | ${flavour?.name}`" variant="outlined" rounded @click="incrementSelection(item.id!, cashable)">
-                        <template #append>
-                            {{ cashable }}
-                        </template>
+                        <v-list-item :title="`${size?.name} | ${flavour?.name}`" variant="outlined" rounded
+                            @click="incrementSelection(item.id!, cashable)" :disabled="selected === cashable">
+                            <template #append>
+                                {{ cashable }}
+                            </template>
                         </v-list-item>
                     </v-col>
                     <v-divider vertical></v-divider>
                     <v-col cols="2">
-                        <v-btn block variant="outlined" height="100%" @click="decrementSelection(item.id!)">{{ selected }}</v-btn>
+                        <v-btn block variant="outlined" height="100%" @click="decrementSelection(item.id!)"
+                            :disabled="selected === 0">{{ selected }}</v-btn>
                     </v-col>
                 </template>
             </v-row>
@@ -28,8 +30,7 @@
 <script setup lang="ts">
 const { api } = useFeathers()
 const route = useRoute()
-
-const selectedItems = ref<Array<{ itemId: number, amount: number }>>([])
+const cashStore = useCashStore()
 
 const tableId = computed(() => {
     return parseInt(route.params.tableId! as string)
@@ -64,7 +65,7 @@ const clusteredBaseItems = computed(() => {
                     flavour,
                     orderedItems: _orderedItems,
                     cashable: _orderedItems.reduce((acc, val) => acc + (val.quantity! - val.cashed!), 0),
-                    selected: selectedItems.value.find(({ itemId }) => itemId === item.id)?.amount || 0
+                    selected: cashStore.selection.value.find(({ itemId }) => itemId === item.id)?.amount || 0
                 }
             })
         }
@@ -72,10 +73,10 @@ const clusteredBaseItems = computed(() => {
 })
 
 const incrementSelection = function (itemId: number, maxAmount: number) {
-    let selection = selectedItems.value.find(selection => selection.itemId === itemId)
+    let selection = cashStore.selection.value.find(selection => selection.itemId === itemId)
     if (!selection) {
         selection = { itemId, amount: 1 }
-        selectedItems.value.push(selection)
+        cashStore.selection.value.push(selection)
     } else {
         selection.amount += 1
         if (selection.amount > maxAmount) {
@@ -84,12 +85,32 @@ const incrementSelection = function (itemId: number, maxAmount: number) {
     }
 }
 const decrementSelection = function (itemId: number) {
-    let selection = selectedItems.value.find(selection => selection.itemId === itemId)
+    let selection = cashStore.selection.value.find(selection => selection.itemId === itemId)
     if (selection) {
         selection.amount -= 1
         if (selection.amount < 0) {
             selection.amount = 0
         }
     }
+    cashStore.resetAllSelected()
 }
+
+const selectAll = function () {
+    let newSelection = new Array<{ itemId: number, amount: number }>()
+    clusteredBaseItems.value.forEach(cluster => {
+        cluster.items.forEach(({ item, cashable }) => {
+            newSelection.push({ itemId: item.id!, amount: cashable })
+        })
+    })
+    cashStore.selection.value = newSelection
+}
+const deselectAll = function () {
+    cashStore.selection.value = []
+}
+cashStore.registerSelectAllCallback(selectAll)
+cashStore.registerDeselectAllCallback(deselectAll)
+onBeforeUnmount(() => {
+    cashStore.deregisterSelectAllCallback()
+    cashStore.deregisterDeselectAllCallback()
+})
 </script>

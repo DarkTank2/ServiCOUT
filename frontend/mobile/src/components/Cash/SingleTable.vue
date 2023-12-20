@@ -115,5 +115,6 @@ cashStore.registerDeselectAllCallback(deselectAll)
 onBeforeUnmount(() => {
     cashStore.deregisterSelectAllCallback()
     cashStore.deregisterDeselectAllCallback()
+    deselectAll()
 })
 </script>

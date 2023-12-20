@@ -5,13 +5,13 @@
   "origins": [
     "http://localhost:3030"
   ],
-  "paginate": {
+  "_paginate": {
     "default": 10,
     "max": 50
   },
   "postgresql": {
     "client": "pg",
-    "connection": "postgres://scoutadmin:DB4ScoutServiceProgram@ssp_db:5432/main"
+    "connection": "postgres://scoutadmin:DB4ScoutServiceProgram@localhost:5432/main"
   },
   "authentication": {
     "entity": "user",

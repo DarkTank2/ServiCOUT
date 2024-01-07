@@ -94,6 +94,24 @@ const router = createRouter({
     }
   }
 })
+router.beforeEach(async (to, from) => {
+  const authStore = useAuthStore()
+  const { api } = useFeathers()
+  const accessToken = await api.authentication.getAccessToken()
+  if (accessToken) {
+    const isExpired = authStore.isTokenExpired(accessToken)
+    if (!isExpired) {
+      console.log('Accesstoken valid.')
+      return true
+    }
+    console.log('Accesstoken expired...')
+  }
+
+  // always resolves. no need to catch
+  await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
+
+  return true
+})
 
 export default router
 

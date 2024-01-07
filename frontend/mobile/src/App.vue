@@ -16,7 +16,7 @@
       <component :is="meta.bottomComponent" @closeBottomComponent="bottomComponentModel = false" />
     </v-bottom-sheet>
     <v-main>
-      <router-view v-slot="{ Component, route }" v-if="authStore.isInitDone">
+      <router-view v-slot="{ Component, route }" v-if="authStore.isAuthenticated">
         <transition :name="route.meta.transition" mode="out-in">
           <component :is="Component" :key="route.path" />
         </transition>
@@ -54,19 +54,30 @@ import Loading from './components/Utilities/Loading.vue';
 const bottomComponentModel = ref(false)
 
 const authStore = useAuthStore()
-authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
+
 const { api } = useFeathers()
 const interval = setInterval(() => {
-  api.service('tenants').find({ query: { id: 2 } })
-  api.service('tables').find()
-  api.service('base-items').find()
-  api.service('sizes').find()
-  api.service('options').find()
-  api.service('flavours').find()
-  api.service('items').find()
-}, 3000)
+  fetch()
+}, 5000)
 onBeforeUnmount(() => {
   clearInterval(interval)
+})
+const fetch = function () {
+  if (!authStore.isAuthenticated) {
+    return
+  }
+  api.service('tenants').find({ query: { id: 2 } })
+  api.service('tables').find({ query: { $limit: 100 } })
+  fetchBaseItems(0)
+  fetchSizes(0)
+  // api.service('options').find()
+  fetchFlavours(0)
+  fetchItems(0)
+}
+onMounted(async () => {
+  let res = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
+  console.log(res)
+  fetch()
 })
 
 const route = useRoute()
@@ -93,6 +104,51 @@ const badgeContent = computed(() => {
 const badgeColor = computed(() => {
   return allCartItemsAvailable.value ? 'green' : 'error'
 })
+
+const fetchSizes = function (_skip: number) {
+  api.service('sizes').find({ query: { $skip: _skip } }).then(({ data, skip, total }) => {
+    if (data.length === 0) {
+      // empty data, thu no data istransferred and there is no more data
+      return
+    }
+    if (data.length + skip !== total) {
+      fetchSizes(data.length + skip)
+    }
+  })
+}
+const fetchFlavours = function (_skip: number) {
+  api.service('flavours').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
+    if (data.length === 0) {
+      // empty data, thu no data istransferred and there is no more data
+      return
+    }
+    if (data.length + skip !== total) {
+      fetchFlavours(data.length + skip)
+    }
+  })
+}
+const fetchBaseItems = function (_skip: number) {
+  api.service('base-items').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
+    if (data.length === 0) {
+      // empty data, thu no data istransferred and there is no more data
+      return
+    }
+    if (data.length + skip !== total) {
+      fetchBaseItems(data.length + skip)
+    }
+  })
+}
+const fetchItems = function (_skip: number) {
+  api.service('items').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
+    if (data.length === 0) {
+      // empty data, thu no data istransferred and there is no more data
+      return
+    }
+    if (data.length + skip !== total) {
+      fetchItems(data.length + skip)
+    }
+  })
+}
 </script>
 <style>
 .swipe-right-enter-active {

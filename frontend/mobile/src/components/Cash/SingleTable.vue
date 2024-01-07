@@ -16,7 +16,7 @@
                                 {{ `${size?.name} | ${flavour?.name} | á ${item.price}€` }}
                             </v-list-item-subtitle>
                             <template #append>
-                                {{ cashable }}
+                                {{ `${cashable - selected}` }}
                             </template>
                         </v-list-item>
                     </v-col>

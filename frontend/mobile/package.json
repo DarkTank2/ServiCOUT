@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
@@ -15,7 +15,7 @@
     "@mdi/font": "7.0.96",
     "@vueuse/core": "^10.6.0",
     "@vueuse/head": "^2.0.0",
-    "backend": "file:../../backend/public/backend-0.0.3.tgz",
+    "backend": "file:../../backend/public/backend-0.0.4.tgz",
     "core-js": "^3.29.0",
     "feathers-pinia": "^4.1.1",
     "moment": "^2.29.4",

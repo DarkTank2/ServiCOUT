@@ -1,15 +1,33 @@
 <template>
   <v-app>
-    <v-app-bar app id="_appbar">
+    <v-app-bar id="_appbar">
+      <template v-slot:prepend>
+          <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        </template>
       <v-toolbar-title>{{ tenant?.currentEventName || 'Loading...' }}</v-toolbar-title>
+      <v-spacer v-if="meta.appBarComponent"></v-spacer>
+      <component v-if="meta.appBarComponent" :is="meta.appBarComponent" />
+      <v-spacer v-if="meta.appBarComponent"></v-spacer>
     </v-app-bar>
+    <v-navigation-drawer v-model="drawer" temporary>
+      <v-list density="compact" lines="three">
+        <v-list-item title="ServiCOUT" subtitle="Verfügbare stationäre Apps"></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item title="Zubereitung" subtitle="Bearbeiten von Bestellungen" prepend-icon="mdi-apps"></v-list-item>
+        <v-list-item title="Rechner" subtitle="Aufnahme von Bestellungen vor Ort" prepend-icon="mdi-calculator-variant-outline"></v-list-item>
+        <v-list-item title="Abonnements" subtitle="Einstellung, welche Produkte angezeigt werden" prepend-icon="mdi-tag-check-outline"></v-list-item>
+        <v-list-item title="Item-Manager" subtitle="Deaktivieren von leeren Produkten" prepend-icon="mdi-tag-off-outline"></v-list-item>
+        <v-list-item title="Statistiken" subtitle="Zeitlicher Verlauf von einem oder mehreren Produkten" prepend-icon="mdi-chart-line"></v-list-item>
+        <v-list-item title="Verlauf" subtitle="Verlauf von verkauften Produkten dieser Station" prepend-icon="mdi-history"></v-list-item>
+        <v-list-item title="Tastenkombinationen" subtitle="Hinzufügen eines Produktes mittels Tastendruck konfigurieren" prepend-icon="mdi-keyboard-outline"></v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <v-main>
       <router-view v-slot="{ Component, route }" v-if="authStore.isAuthenticated">
         <transition :name="route.meta.transition" mode="out-in">
           <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
-      
       <loading />
       <notification />
     </v-main>
@@ -19,6 +37,8 @@
 <script lang="ts" setup>
 import Notification from './components/Utilities/Notification.vue';
 import Loading from './components/Utilities/Loading.vue';
+
+const drawer = ref(false)
 
 const authStore = useAuthStore()
 

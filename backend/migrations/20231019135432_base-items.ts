@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id')
 
     table.string('name').notNullable()
+    table.string('description')
     table.boolean('available').defaultTo(true)
     table.integer('categoryId').notNullable()
     table.integer('tenantId').notNullable()

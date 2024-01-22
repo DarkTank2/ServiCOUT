@@ -12,6 +12,7 @@ export const baseItemsSchema = Type.Object(
   {
     id: Type.Number(),
     name: Type.String(),
+    description: Type.Optional(Type.String()),
     available: Type.Optional(Type.Boolean()),
     categoryId: Type.Integer(),
     tenantId: Type.Integer()
@@ -25,7 +26,7 @@ export const baseItemsResolver = resolve<BaseItems, HookContext<BaseItemsService
 export const baseItemsExternalResolver = resolve<BaseItems, HookContext<BaseItemsService>>({})
 
 // Schema for creating new entries
-export const baseItemsDataSchema = Type.Pick(baseItemsSchema, ['name', 'available', 'categoryId', 'tenantId'], {
+export const baseItemsDataSchema = Type.Pick(baseItemsSchema, ['name', 'description', 'available', 'categoryId', 'tenantId'], {
   $id: 'BaseItemsData'
 })
 export type BaseItemsData = Static<typeof baseItemsDataSchema>

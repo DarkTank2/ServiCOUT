@@ -3,16 +3,33 @@ import { useUsersettings } from '@/store/usersettings-store'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { Component } from 'vue'
 
-import ShoppingCart from '@/components/BottomComponents/ShoppingCart.vue'
-import OrderExtension from '@/components/AppBarExtensions/OrderExtension.vue'
-import CashExtension from '@/components/AppBarExtensions/CashExtension.vue'
-import CashComponent from '@/components/AppBarComponents/CashComponent.vue'
+import Timer from '@/components/AppBar/Time.vue'
 
 const routes = [
   {
     path: '/',
     name: 'base',
-    component: () => import('@/views/Home.vue')
+    redirect: () => {
+      return { name: 'Main' }
+    }
+  },
+  {
+    path: '/main',
+    name: 'Main',
+    component: () => import('@/views/Main.vue'),
+    meta: {
+      appBarComponent: Timer
+    }
+  },
+  {
+    path: '/item-manager',
+    name: 'ItemManager',
+    component: () => import('@/views/ItemManager.vue')
+  },
+  {
+    path: '/subscriptions',
+    name: 'Subscriptions',
+    component: () => import('@/views/Subscriptions.vue')
   }
 ]
 

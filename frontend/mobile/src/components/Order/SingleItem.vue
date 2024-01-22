@@ -25,10 +25,16 @@
                     </v-toolbar-title>
                 </v-toolbar>
                 <v-card-text :style="{ paddingTop: '40px' }">
+                    <template v-if="baseItem.description">
+                        <span class="text-body-1">Beschreibung:</span>
+                        <br />
+                        <span class="text-grey-lighten-1">{{ baseItem.description }}</span>
+                        <v-divider :style="{ 'margin-top': '4px' }"></v-divider>
+                    </template>
                     <span class="text-body-1">Menge:</span>
                     <v-list-item :style="{ textAlign: 'center' }">
                         <template #prepend>
-                            <v-btn icon="mdi-minus" @click.stop="decrement"></v-btn>
+                            <v-btn icon="mdi-minus" @click.stop="decrement" :disabled="amount <= 1"></v-btn>
                         </template>
                         <v-btn disabled variant="outlined" rounded class="text-white" :style="{ opacity: 1 }">{{ amount
                         }}</v-btn>
@@ -65,7 +71,7 @@
                     <!-- <v-divider></v-divider>
                     <span class="text-body-1">Optionen:</span> -->
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions :style="{ 'padding-left': '24px', 'padding-right': '24px', 'padding-bottom': '24px' }">
                     <v-btn block elevation="2" variant="outlined" rounded :disabled="!selectedItem"
                         @click.stop="addToOrder">
                         Zur Bestellung hinzufügen
@@ -122,12 +128,6 @@ const possibleSizes = computed(() => {
 const defaultItem = computed(() => {
     return items.value.find((item) => item.default) || items.value[0]
 })
-watch(defaultItem, (newVal) => {
-    if (newVal) {
-        flavourId.value = newVal.flavourId!
-        sizeId.value = newVal.sizeId!
-    }
-})
 const finishedLoading = computed(() => {
     return (sizes.value.length > 0) && (flavours.value.length > 0)
 })
@@ -147,12 +147,11 @@ const style = computed(() => {
 })
 
 const updateDialog = function (modelValue: boolean) {
-    if (!modelValue) {
-        amount.value = 1
-        flavourId.value = defaultItem.value?.flavourId!
-        sizeId.value = defaultItem.value?.sizeId!
-        comment.value = undefined
-    }
+    // if the dialog gets opened or closed always reset everything, do this on open as well as close because it is easier
+    amount.value = 1
+    flavourId.value = defaultItem.value?.flavourId!
+    sizeId.value = defaultItem.value?.sizeId!
+    comment.value = undefined
 }
 const increment = function () {
     amount.value += 1

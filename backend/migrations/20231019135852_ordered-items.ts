@@ -6,7 +6,9 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id')
 
     table.integer('quantity').notNullable()
-    table.boolean('finished').defaultTo(false) // is finished preparing?
+    // finished is now moved to orders, a whole order can now be finished
+    // table.boolean('finished').defaultTo(false) // is finished preparing?
+    table.boolean('error').defaultTo(false)
     table.integer('cashed').defaultTo(0) // amount already cashed
     table.boolean('fullyCashed').defaultTo(false) // indicates if the OI is already fully cashed and thus can be omitted in queries by this field
     table.string('comment')

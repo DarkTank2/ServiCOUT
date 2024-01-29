@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('waiter').notNullable()
     table.integer('tableId').notNullable()
     table.integer('tenantId').notNullable()
+    table.boolean('finished').defaultTo(false)
     // table.integer('userId').notNullable()
 
     table.timestamps(true, true, true)

@@ -14,6 +14,7 @@ export const ordersSchema = Type.Object(
     waiter: Type.String(),
     tableId: Type.Integer(),
     tenantId: Type.Integer(),
+    finished: Type.Optional(Type.Boolean()),
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' }))
   },
@@ -26,7 +27,7 @@ export const ordersResolver = resolve<Orders, HookContext<OrdersService>>({})
 export const ordersExternalResolver = resolve<Orders, HookContext<OrdersService>>({})
 
 // Schema for creating new entries
-export const ordersDataSchema = Type.Pick(ordersSchema, ['waiter', 'tableId', 'tenantId'], {
+export const ordersDataSchema = Type.Pick(ordersSchema, ['waiter', 'tableId', 'tenantId', 'finished'], {
   $id: 'OrdersData'
 })
 export type OrdersData = Static<typeof ordersDataSchema>
@@ -42,7 +43,7 @@ export const ordersPatchValidator = getValidator(ordersPatchSchema, dataValidato
 export const ordersPatchResolver = resolve<Orders, HookContext<OrdersService>>({})
 
 // Schema for allowed query properties
-export const ordersQueryProperties = Type.Pick(ordersSchema, ['id', 'waiter', 'tableId', 'tenantId'])
+export const ordersQueryProperties = Type.Pick(ordersSchema, ['id', 'waiter', 'tableId', 'tenantId', 'finished'])
 export const ordersQuerySchema = Type.Intersect(
   [
     querySyntax(ordersQueryProperties),

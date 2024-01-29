@@ -52,7 +52,9 @@ export const orderedItemsQuerySchema = Type.Intersect(
   [
     querySyntax(orderedItemsQueryProperties),
     // Add additional query properties here
-    Type.Object({}, { additionalProperties: false })
+    Type.Object({
+      'order.finished': Type.Optional(Type.Boolean())
+    }, { additionalProperties: false })
   ],
   { additionalProperties: false }
 )

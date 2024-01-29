@@ -21,7 +21,15 @@ export class OrderedItemsService<ServiceParams extends Params = OrderedItemsPara
   OrderedItemsData,
   OrderedItemsParams,
   OrderedItemsPatch
-> {}
+> {
+  createQuery(params: OrderedItemsParams) {
+    const query = super.createQuery(params)
+
+    query.join('orders as order', 'ordered-items.orderId', 'order.id')
+
+    return query
+  }
+}
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {

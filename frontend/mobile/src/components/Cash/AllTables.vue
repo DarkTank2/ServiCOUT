@@ -18,17 +18,19 @@
 <script setup lang="ts">
 const { api } = useFeathers()
 const { data: tables } = toRefs(api.service('tables').findInStore(ref({ query: {} })))
-const { data: finishedItems } = toRefs(api.service('ordered-items').findInStore(ref({ query: { finished: true, fullyCashed: false } })))
-const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { id: { $in: finishedItems.value.map(({ orderId }) => orderId!) } } }))))
+const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { finished: true } }))))
+const { data: finishedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: orders.value.map(({ id }) => id!) }, fullyCashed: false } }))))
 const populatedTables = computed(() => {
     let data = tables.value.map(table => {
-        let orderedItems = finishedItems.value.filter(({ orderId }) => orders.value.find(({ id }) => id === orderId)?.tableId === table.id)
+        let ordersOnTable = orders.value.filter(({ tableId }) => tableId === table.id).map(({ id }) => id)
+        let orderedItems = finishedItems.value.filter(({ orderId }) => {
+            return ordersOnTable.includes(orderId)
+        })
         return {
             table,
             cashable: orderedItems.reduce((acc, val) => acc + (val.quantity! - val.cashed!), 0)
         }
     })
-    console.log(data)
     return data
 })
 </script>

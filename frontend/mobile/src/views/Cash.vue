@@ -2,16 +2,19 @@
     <router-view />
 </template>
 <script setup lang="ts">
+
 const { api } = useFeathers()
 const fetchInterval = setInterval(() => {
     fetchOrderedItems(0)
     fetchOrders(0)
-}, 3000)
+}, 5000)
 onBeforeUnmount(() => {
     clearInterval(fetchInterval)
 })
 const fetchOrderedItems = function (_skip: number) {
-    api.service('ordered-items').find({ query: { finished: true, fullyCashed: false, $skip: _skip } }).then(({ data, total, skip }) => {
+  // the following indicates an error, but 'order.finished' is a valid query parameter and is sent successfully to the backend
+  // it works as expected  
+  api.service('ordered-items').find({ query: { $skip: _skip, 'order.finished': true, fullyCashed: false } }).then(({ data, total, skip }) => {
     if (data.length === 0) {
       // empty data, thu no data istransferred and there is no more data
       return
@@ -22,7 +25,7 @@ const fetchOrderedItems = function (_skip: number) {
   })
 }
 const fetchOrders = function (_skip: number) {
-    api.service('orders').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
+    api.service('orders').find({ query: { finished: true, $skip: _skip } }).then(({ data, total, skip }) => {
     if (data.length === 0) {
       // empty data, thu no data istransferred and there is no more data
       return

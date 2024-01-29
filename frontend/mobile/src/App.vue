@@ -58,7 +58,7 @@ const authStore = useAuthStore()
 const { api } = useFeathers()
 const interval = setInterval(() => {
   fetch()
-}, 5000)
+}, 10000)
 onBeforeUnmount(() => {
   clearInterval(interval)
 })

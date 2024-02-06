@@ -20,6 +20,7 @@
         <v-list-item :to="{ name: 'base' }" title="Statistiken" subtitle="Zeitlicher Verlauf von einem oder mehreren Produkten" prepend-icon="mdi-chart-line"></v-list-item>
         <v-list-item :to="{ name: 'base' }" title="Verlauf" subtitle="Verlauf von verkauften Produkten dieser Station" prepend-icon="mdi-history"></v-list-item>
         <v-list-item :to="{ name: 'base' }" title="Tastenkombinationen" subtitle="Hinzufügen eines Produktes mittels Tastendruck konfigurieren" prepend-icon="mdi-keyboard-outline"></v-list-item>
+        <v-list-item :to="{ name: 'GlobalConfig' }" title="Konfiguration" subtitle="Nur für Administratoren!" prepend-icon="mdi-cog"></v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -44,19 +45,10 @@ const authStore = useAuthStore()
 
 const { api } = useFeathers()
 
-const fetch = function () {
-  api.service('tenants').find({ query: { id: 2 } })
-  api.service('tables').find({ query: { $limit: 100 } })
-  fetchBaseItems(0)
-  fetchSizes(0)
-  // api.service('options').find()
-  fetchFlavours(0)
-  fetchItems(0)
-}
 onMounted(async () => {
   let res = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
   console.log(res)
-  fetch()
+  api.service('tenants').find({ query: { id: 2 } })
 })
 
 const route = useRoute()
@@ -64,51 +56,6 @@ const meta = computed(() => {
   return route.meta
 })
 const tenant = api.service('tenants').getFromStore(ref(2))
-
-const fetchSizes = function (_skip: number) {
-  api.service('sizes').find({ query: { $skip: _skip } }).then(({ data, skip, total }) => {
-    if (data.length === 0) {
-      // empty data, thu no data istransferred and there is no more data
-      return
-    }
-    if (data.length + skip !== total) {
-      fetchSizes(data.length + skip)
-    }
-  })
-}
-const fetchFlavours = function (_skip: number) {
-  api.service('flavours').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
-    if (data.length === 0) {
-      // empty data, thu no data istransferred and there is no more data
-      return
-    }
-    if (data.length + skip !== total) {
-      fetchFlavours(data.length + skip)
-    }
-  })
-}
-const fetchBaseItems = function (_skip: number) {
-  api.service('base-items').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
-    if (data.length === 0) {
-      // empty data, thu no data istransferred and there is no more data
-      return
-    }
-    if (data.length + skip !== total) {
-      fetchBaseItems(data.length + skip)
-    }
-  })
-}
-const fetchItems = function (_skip: number) {
-  api.service('items').find({ query: { $skip: _skip } }).then(({ data, total, skip }) => {
-    if (data.length === 0) {
-      // empty data, thu no data istransferred and there is no more data
-      return
-    }
-    if (data.length + skip !== total) {
-      fetchItems(data.length + skip)
-    }
-  })
-}
 </script>
 <style>
 .swipe-right-enter-active {

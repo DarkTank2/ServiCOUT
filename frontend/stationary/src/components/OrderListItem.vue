@@ -11,7 +11,7 @@
             </v-list-item-subtitle>
         </template>
         <template #append>
-            <span class="text-h4">{{ `x ${orderedItem.quantity}` }}</span>
+            <span :class="{ 'text-error': errorState, 'text-h4': !errorState, 'text-h1': errorState }" class="ml-2">{{ quantityDisplay }}</span>
         </template>
     </v-list-item>
 </template>
@@ -20,12 +20,19 @@ import { OrderedItemsData } from 'backend';
 import { ServiceInstance } from 'feathers-pinia';
 
 const { width } = useWindowSize()
-
 const { api } = useFeathers()
+
+const errorState = ref(false)
 
 const props = defineProps<{ orderedItem: ServiceInstance<OrderedItemsData> }>()
 const item = api.service('items').getFromStore(props.orderedItem.itemId!)
 const baseItem = api.service('base-items').getFromStore(computed(() => item.value?.baseItemId! || 0))
 const size = api.service('sizes').getFromStore(computed(() => item.value?.sizeId! || 0))
 const flavour = api.service('flavours').getFromStore(computed(() => item.value?.flavourId! || 0))
+const quantityDisplay = computed(() => {
+    if (errorState.value) {
+        return 'X'
+    }
+    return `x ${props.orderedItem.quantity}`
+})
 </script>

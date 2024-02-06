@@ -176,6 +176,7 @@ declare global {
   const useFavicon: typeof import('@vueuse/core')['useFavicon']
   const useFeathers: typeof import('./composables/use-feathers')['useFeathers']
   const useFetch: typeof import('@vueuse/core')['useFetch']
+  const useFetchUtility: typeof import('./composables/use-fetch-utility')['useFetchUtility']
   const useFileDialog: typeof import('@vueuse/core')['useFileDialog']
   const useFileSystemAccess: typeof import('@vueuse/core')['useFileSystemAccess']
   const useFocus: typeof import('@vueuse/core')['useFocus']
@@ -482,6 +483,7 @@ declare module 'vue' {
     readonly useFavicon: UnwrapRef<typeof import('@vueuse/core')['useFavicon']>
     readonly useFeathers: UnwrapRef<typeof import('./composables/use-feathers')['useFeathers']>
     readonly useFetch: UnwrapRef<typeof import('@vueuse/core')['useFetch']>
+    readonly useFetchUtility: UnwrapRef<typeof import('./composables/use-fetch-utility')['useFetchUtility']>
     readonly useFileDialog: UnwrapRef<typeof import('@vueuse/core')['useFileDialog']>
     readonly useFileSystemAccess: UnwrapRef<typeof import('@vueuse/core')['useFileSystemAccess']>
     readonly useFocus: UnwrapRef<typeof import('@vueuse/core')['useFocus']>
@@ -781,6 +783,7 @@ declare module '@vue/runtime-core' {
     readonly useFavicon: UnwrapRef<typeof import('@vueuse/core')['useFavicon']>
     readonly useFeathers: UnwrapRef<typeof import('./composables/use-feathers')['useFeathers']>
     readonly useFetch: UnwrapRef<typeof import('@vueuse/core')['useFetch']>
+    readonly useFetchUtility: UnwrapRef<typeof import('./composables/use-fetch-utility')['useFetchUtility']>
     readonly useFileDialog: UnwrapRef<typeof import('@vueuse/core')['useFileDialog']>
     readonly useFileSystemAccess: UnwrapRef<typeof import('@vueuse/core')['useFileSystemAccess']>
     readonly useFocus: UnwrapRef<typeof import('@vueuse/core')['useFocus']>

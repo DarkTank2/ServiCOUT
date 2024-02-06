@@ -17,31 +17,15 @@
 import Void from '@/components/svg/Void.vue'
 import OrderWrapper from '@/components/OrderWrapper.vue';
 const { api } = useFeathers()
-
-const fetchOrders = function (_skip: number) {
-    api.service('orders').find({ query: { finished: false, $skip: _skip } }).then(({ data, skip, total }) => {
-        if (data.length === 0) {
-            return
-        }
-        if (data.length + skip !== total) {
-            // not the end, fetch more
-            fetchOrders(data.length + skip)
-        }
-    })
-}
-const fetchOrderedItems = function (_skip: number) {
-    api.service('ordered-items').find({ query: { cashed: 0, $skip: _skip, "order.finished": false } }).then(({ data, skip, total }) => {
-        if (data.length === 0) {
-            return
-        }
-        if (data.length + skip !== total) {
-            // not the end, fetch more
-            fetchOrderedItems(data.length + skip)
-        }
-    })
-}
-fetchOrders(0)
-fetchOrderedItems(0)
+const { fetchAllOrders, fetchAllOrderedItems, fetchAllBaseItems, fetchAllSizes, fetchAllFlavours, fetchAllItems } = useFetchUtility()
+fetchAllOrders({ finished: false })
+fetchAllOrderedItems({ cashed: 0, 'order.finished': false })
+api.service('tables').find({ query: { $limit: 100 } })
+fetchAllBaseItems({})
+fetchAllSizes({})
+// fetchAllOptions({})
+fetchAllFlavours({})
+fetchAllItems({})
 
 const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { finished: false } }))))
 </script>

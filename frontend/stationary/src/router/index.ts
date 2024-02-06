@@ -30,6 +30,11 @@ const routes = [
     path: '/subscriptions',
     name: 'Subscriptions',
     component: () => import('@/views/Subscriptions.vue')
+  },
+  {
+    path: '/configuration',
+    name: 'GlobalConfig',
+    component: () => import('@/views/GlobalConfig.vue')
   }
 ]
 

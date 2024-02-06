@@ -1,5 +1,5 @@
 <template>
-    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'currentColor' : 'transparent'}` }">
+    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}` }">
         <template #title>
             <span :class="{ 'text-error': claim, 'text-success': !claim }">
                 {{ title }}

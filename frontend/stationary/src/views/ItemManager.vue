@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <BaseItemsServiceTable :hide-properties="['tenantId']" />
+        <BaseItemsServiceTable :hide-properties="['tenantId']" deny-creation />
     </v-container>
 </template>
 <script setup lang="ts">

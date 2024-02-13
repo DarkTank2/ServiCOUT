@@ -7,6 +7,8 @@
 
 import OrderCard from './OrderCard.vue';
 
+const usersettings = useUsersettings()
+
 const { api } = useFeathers()
 const { height } = useWindowSize()
 
@@ -16,7 +18,11 @@ type OrderContainer = {
 const props = defineProps<OrderContainer>()
 const order = api.service('orders').getFromStore(props.orderId)
 const table = api.service('tables').getFromStore(order.value.tableId!)
-const { data: orderedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: props.orderId } }))))
+const subscribedItems = computed(() => {
+    const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: { $in: usersettings.getSubscriptions } } }))))
+    return items.value.map(({ id }) => id!)
+})
+const { data: orderedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: props.orderId, itemId: { $in: subscribedItems.value } } }))))
 const size = computed(() => {
     const appBarHeight = 64
     const containerPadding = 16 + 16

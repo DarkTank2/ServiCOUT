@@ -2,16 +2,27 @@
     <v-card class="pa-2 my-2">
         <v-card-title class="d-flex align-center pe-2">
             <span>Größen</span>
-
-            <v-spacer></v-spacer>
-
-            <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line
-                flat hide-details variant="solo-filled"></v-text-field>
         </v-card-title>
 
         <v-divider></v-divider>
         <v-data-table :items="clonedItems" :search="search"
             :headers="[...headers, { value: 'action', title: 'Bearbeiten', width: '60px', align: 'center' }]">
+            <template #top>
+                <v-toolbar flat>
+                    <new-item-dialog v-if="!denyCreation" :headers="headers" :service-name="serviceName">
+                        <template #button>
+                            <v-icon icon="mdi-plus"></v-icon>
+                            <span>Neue Größe anlegen</span>
+                        </template>
+                        <template #dialog-title>Erstelle eine neue Größe</template>
+                    </new-item-dialog>
+
+                    <v-spacer></v-spacer>
+
+                    <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact" label="Search"
+                        single-line flat hide-details variant="solo-filled"></v-text-field>
+                </v-toolbar>
+            </template>
             <template v-for="header in headers" #[`item.${header.value}`]="{ item }">
                 <v-text-field v-if="header.type === 'string'" v-model="item[header.value]" :readonly="header.readonly"
                     :density="'compact'" @update:model-value="save(item)" />
@@ -32,6 +43,7 @@
     </v-card>
 </template>
 <script setup lang="ts">
+import NewItemDialog from './NewItemDialog.vue';
 import { ServiceTypes } from 'backend';
 import { SizesData } from 'backend';
 type DataType = SizesData
@@ -41,7 +53,8 @@ const { api } = useFeathers()
 interface ServiceTableProps {
     hideProperties?: [keyof DataType],
     readonlyProperties?: ['id', keyof DataType]
-    showId?: boolean
+    showId?: boolean,
+    denyCreation?: boolean
 }
 interface I {
     value: 'id' | keyof DataType,

@@ -8,9 +8,10 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('quantity').notNullable()
     // finished is now moved to orders, a whole order can now be finished
     // table.boolean('finished').defaultTo(false) // is finished preparing?
-    table.boolean('error').defaultTo(false)
-    table.integer('cashed').defaultTo(0) // amount already cashed
-    table.boolean('fullyCashed').defaultTo(false) // indicates if the OI is already fully cashed and thus can be omitted in queries by this field
+    table.integer('error').defaultTo(0)
+    table.integer('open').notNullable()
+    table.integer('notCashed').notNullable() // amount already cashed
+    // table.boolean('fullyCashed').defaultTo(false) // indicates if the OI is already fully cashed and thus can be omitted in queries by this field
     table.string('comment')
     
     table.integer('itemId').notNullable()

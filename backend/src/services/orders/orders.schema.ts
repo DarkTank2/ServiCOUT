@@ -14,7 +14,7 @@ export const ordersSchema = Type.Object(
     waiter: Type.String(),
     tableId: Type.Integer(),
     tenantId: Type.Integer(),
-    finished: Type.Optional(Type.Boolean()),
+    finished: Type.Optional(Type.Boolean()), // indicates whether the whole order is finished or not
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' }))
   },
@@ -27,7 +27,7 @@ export const ordersResolver = resolve<Orders, HookContext<OrdersService>>({})
 export const ordersExternalResolver = resolve<Orders, HookContext<OrdersService>>({})
 
 // Schema for creating new entries
-export const ordersDataSchema = Type.Pick(ordersSchema, ['waiter', 'tableId', 'tenantId', 'finished'], {
+export const ordersDataSchema = Type.Pick(ordersSchema, ['waiter', 'tableId', 'tenantId'], {
   $id: 'OrdersData'
 })
 export type OrdersData = Static<typeof ordersDataSchema>

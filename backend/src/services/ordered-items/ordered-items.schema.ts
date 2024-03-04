@@ -12,9 +12,9 @@ export const orderedItemsSchema = Type.Object(
   {
     id: Type.Number(),
     quantity: Type.Integer(),
-    error: Type.Optional(Type.Boolean()),
-    cashed: Type.Optional(Type.Integer()),
-    fullyCashed: Type.Optional(Type.Boolean()),
+    error: Type.Optional(Type.Integer()), // indicates how much error-ful items there are, exmple: some product is empty and only a fraction of the ordered amount could be prepared
+    open: Type.Integer(), // indicates the amount of not prepared items
+    notCashed: Type.Integer(), // indicates how many items are not yet cashed
     comment: Type.Optional(Type.String()),
     itemId: Type.Integer(),
     orderId: Type.Integer(),
@@ -31,7 +31,7 @@ export const orderedItemsResolver = resolve<OrderedItems, HookContext<OrderedIte
 export const orderedItemsExternalResolver = resolve<OrderedItems, HookContext<OrderedItemsService>>({})
 
 // Schema for creating new entries
-export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'error', 'cashed', 'fullyCashed', 'comment', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'], {
+export const orderedItemsDataSchema = Type.Pick(orderedItemsSchema, ['quantity', 'error', 'notCashed', 'open', 'comment', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'], {
   $id: 'OrderedItemsData'
 })
 export type OrderedItemsData = Static<typeof orderedItemsDataSchema>
@@ -47,7 +47,7 @@ export const orderedItemsPatchValidator = getValidator(orderedItemsPatchSchema, 
 export const orderedItemsPatchResolver = resolve<OrderedItems, HookContext<OrderedItemsService>>({})
 
 // Schema for allowed query properties
-export const orderedItemsQueryProperties = Type.Pick(orderedItemsSchema, ['id', 'error', 'cashed', 'fullyCashed', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'])
+export const orderedItemsQueryProperties = Type.Pick(orderedItemsSchema, ['id', 'error', 'open', 'notCashed', 'itemId', 'orderId', 'tenantId', 'createdAt', 'updatedAt'])
 export const orderedItemsQuerySchema = Type.Intersect(
   [
     querySyntax(orderedItemsQueryProperties),

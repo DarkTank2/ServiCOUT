@@ -1,11 +1,11 @@
 <template>
-    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}` }">
-        <template #title>
+    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}`, display: 'flex', flexDirection: 'column' }" :height="cardHeight">
+        <v-card-title>
             <span :class="{ 'text-error': claim, 'text-success': !claim }">
                 {{ title }}
             </span>
-        </template>
-        <template #text>
+        </v-card-title>
+        <v-card-text class="grow">
             <v-row no-gutters>
                 <template v-for="column, i in columns">
                     <v-divider v-if="i !== 0" vertical></v-divider>
@@ -19,11 +19,14 @@
                     </v-col>
                 </template>
             </v-row>
-        </template>
-        <template #actions>
+        </v-card-text>
+        <v-card-actions>
             <v-btn :loading="loading" block prepend-icon="mdi-send" variant="outlined"
                 @click.stop="finishOrder">Fertigstellen</v-btn>
-        </template>
+        </v-card-actions>
+        <v-overlay contained :model-value="loading" class="align-center justify-center" opacity="0.7">
+            <v-progress-circular color="primary" indeterminate size="64"></v-progress-circular>
+        </v-overlay>
     </v-card>
 </template>
 <script setup lang="ts">
@@ -70,13 +73,25 @@ const columns = computed(() => {
 })
 const finishOrder = async function () {
     loading.value = true
-    let clone = props.order.clone()
-    clone.finished = true
-    await clone.save({ eager: true })
+    // let clone = props.order.clone()
+    // clone.finished = true
+    // await clone.save({ eager: true })
+    for (let oi of props.orderedItems) {
+        let clone = oi.clone()
+        clone.open = 0
+        await clone.save()
+    }
     loading.value = false
 }
 const claimOrder = function () {
     claim.value = !claim.value
 }
+
+const windowSize = useWindowSize()
+const appBarHeight = 64
+const containerPadding = 16 + 16
+const cardHeight = computed(() => {
+    return `${windowSize.height.value - appBarHeight - containerPadding}px`
+})
 
 </script>

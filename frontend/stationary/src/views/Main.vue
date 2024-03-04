@@ -19,7 +19,7 @@ import OrderWrapper from '@/components/OrderWrapper.vue';
 const { api } = useFeathers()
 const { fetchAllOrders, fetchAllOrderedItems, fetchAllBaseItems, fetchAllSizes, fetchAllFlavours, fetchAllItems } = useFetchUtility()
 fetchAllOrders({ finished: false })
-fetchAllOrderedItems({ cashed: 0, 'order.finished': false })
+fetchAllOrderedItems({ open: { $gt: 0 } })
 api.service('tables').find({ query: { $limit: 100 } })
 fetchAllBaseItems({})
 fetchAllSizes({})

@@ -16,7 +16,10 @@
                                 {{ `${size?.name} | ${flavour?.name} | á ${item.price}€` }}
                             </v-list-item-subtitle>
                             <template #append>
-                                {{ `${cashable - selected}` }}
+                                <span v-if="utilities.fetchPending === false">
+                                    {{ `${cashable - selected}` }}
+                                </span>
+                                <v-progress-circular v-if="utilities.fetchPending === true" indeterminate></v-progress-circular>
                             </template>
                         </v-list-item>
                     </v-col>
@@ -41,13 +44,14 @@ const { api } = useFeathers()
 const route = useRoute()
 const cashStore = useCashStore()
 const { setNotification, setFetchPending, resetFetchPending } = useUtilityStore()
+const utilities = useUtilityStore()
 
 const tableId = computed(() => {
     return parseInt(route.params.tableId! as string)
 })
 const table = api.service('tables').getFromStore(tableId)
 const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { tableId: tableId.value, finished: true } }))))
-const { data: orderedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: orders.value.map(({ id }) => id!) }, fullyCashed: false } }))))
+const { data: orderedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: orders.value.map(({ id }) => id!) }, notCashed: { $gt: 0 } } }))))
 const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { id: { $in: orderedItems.value.map(({ itemId }) => itemId!) } } }))))
 const { data: baseItems } = toRefs(api.service('base-items').findInStore(computed(() => ({ query: { id: { $in: items.value.map(({ baseItemId }) => baseItemId!) } } }))))
 const { data: sizes } = toRefs(api.service('sizes').findInStore(ref({ query: {} })))
@@ -66,7 +70,7 @@ const clusteredBaseItems = computed(() => {
                     size,
                     flavour,
                     orderedItems: _orderedItems,
-                    cashable: _orderedItems.reduce((acc, val) => acc + (val.quantity! - val.cashed!), 0),
+                    cashable: _orderedItems.reduce((acc, val) => acc + val.notCashed!, 0),
                     selected: cashStore.selection.value.find(({ baseItemId }) => baseItemId === baseItem.id)?.items.find(({ itemId }) => itemId === item.id)?.amount || 0
                 }
             })
@@ -119,14 +123,11 @@ const cash = async function () {
             // iterate over all ordered items that can be used for cashing this specific selected item
             for (let orderedItem of selectableOrderedItems.orderedItems) {
                 // determinate the maximal amount cashable for this ordered item
-                let maxCashable = orderedItem.quantity! - orderedItem.cashed!
+                let maxCashable = orderedItem.notCashed!
                 // evaluate the amount actually cashed for this ordered item based on the selected amount and the maximal cashable amount for this OI
                 let cashing = Math.min(maxCashable, selectedItem.amount)
                 let clone = orderedItem.clone()
-                clone.cashed! += cashing
-                if (clone.cashed === clone.quantity) {
-                    clone.fullyCashed = true
-                }
+                clone.notCashed! -= cashing
                 await clone.save()
                 // reduce the available remaining amount to be cashed for this item by the actual amount cashed
                 selectedItem.amount -= cashing

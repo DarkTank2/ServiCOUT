@@ -8,13 +8,17 @@ const fetchInterval = setInterval(() => {
     fetchOrderedItems(0)
     fetchOrders(0)
 }, 5000)
+onMounted(() => {
+  fetchOrderedItems(0)
+  fetchOrders(0)
+})
 onBeforeUnmount(() => {
     clearInterval(fetchInterval)
 })
 const fetchOrderedItems = function (_skip: number) {
   // the following indicates an error, but 'order.finished' is a valid query parameter and is sent successfully to the backend
   // it works as expected  
-  api.service('ordered-items').find({ query: { $skip: _skip, 'order.finished': true, fullyCashed: false } }).then(({ data, total, skip }) => {
+  api.service('ordered-items').find({ query: { $skip: _skip, open: 0, notCashed: { $gt: 0 } } }).then(({ data, total, skip }) => {
     if (data.length === 0) {
       // empty data, thu no data istransferred and there is no more data
       return

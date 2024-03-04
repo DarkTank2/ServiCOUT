@@ -131,6 +131,8 @@ const finishOrder = async function () {
     let order = await api.service('orders').create({ waiter: usersettings.getName!, tableId: usersettings.getTableId!, tenantId: auth.user.tenantId as number })
     for (const orderedItem of rawOrder.value) {
         orderedItem.orderId = order.id
+        orderedItem.open = orderedItem.quantity
+        orderedItem.notCashed = orderedItem.quantity
         await orderedItem.save()
     }
     utilities.resetFetchPending()

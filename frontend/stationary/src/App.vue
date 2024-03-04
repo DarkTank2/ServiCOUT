@@ -14,7 +14,7 @@
         <v-list-item title="ServiCOUT" subtitle="Verfügbare stationäre Apps"></v-list-item>
         <v-divider></v-divider>
         <v-list-item :to="{ name: 'Main' }" title="Zubereitung" subtitle="Bearbeiten von Bestellungen" prepend-icon="mdi-apps"></v-list-item>
-        <v-list-item :to="{ name: 'base' }" title="Rechner" subtitle="Aufnahme von Bestellungen vor Ort" prepend-icon="mdi-calculator-variant-outline"></v-list-item>
+        <v-list-item :to="{ name: 'Calculator' }" title="Rechner" subtitle="Aufnahme von Bestellungen vor Ort" prepend-icon="mdi-calculator-variant-outline"></v-list-item>
         <v-list-item :to="{ name: 'Subscriptions' }" title="Abonnements" subtitle="Einstellung, welche Produkte angezeigt werden" prepend-icon="mdi-tag-check-outline"></v-list-item>
         <v-list-item :to="{ name: 'ItemManager' }" title="Item-Manager" subtitle="Deaktivieren von leeren Produkten" prepend-icon="mdi-tag-off-outline"></v-list-item>
         <v-list-item :to="{ name: 'base' }" title="Statistiken" subtitle="Zeitlicher Verlauf von einem oder mehreren Produkten" prepend-icon="mdi-chart-line"></v-list-item>

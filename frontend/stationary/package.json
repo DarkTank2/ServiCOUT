@@ -18,6 +18,7 @@
     "backend": "file:../../backend/public/backend-0.0.8.tgz",
     "core-js": "^3.29.0",
     "feathers-pinia": "^4.1.1",
+    "grid-layout-plus": "^1.0.4",
     "moment": "^2.29.4",
     "pinia": "^2.1.7",
     "roboto-fontface": "*",

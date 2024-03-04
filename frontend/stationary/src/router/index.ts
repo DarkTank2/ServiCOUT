@@ -22,6 +22,14 @@ const routes = [
     }
   },
   {
+    path: '/calculator',
+    name: 'Calculator',
+    component: () => import('@/views/Calculator.vue'),
+    meta: {
+      appBarComponent: Timer
+    }
+  },
+  {
     path: '/item-manager',
     name: 'ItemManager',
     component: () => import('@/views/ItemManager.vue')

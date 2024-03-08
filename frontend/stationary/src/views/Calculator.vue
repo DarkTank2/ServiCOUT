@@ -1,12 +1,13 @@
 <template>
     <v-container fluid>
-        <span>Calculator</span>
-        <SingleCategory :category-id="1" :use-quick-mode="false" />
-        <SingleCategory :category-id="1" :use-quick-mode="true" />
+        <SeparatedWrapper v-if="calculator.separatedMode" />
+        <MixedWrapper v-else />
     </v-container>
 </template>
 <script setup lang="ts">
-import SingleCategory from '@/components/Calculator/SingleCategory.vue';
+import SeparatedWrapper from '@/components/Calculator/SeparatedWrapper.vue';
+import MixedWrapper from '@/components/Calculator/MixedWrapper.vue'
+const calculator = useCalculatorStore()
 const fetch = useFetchUtility()
 fetch.fetchAllBaseItems({})
 fetch.fetchAllCategories({})

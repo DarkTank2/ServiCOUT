@@ -1,21 +1,12 @@
 <template>
     <v-row style="padding: 20px;" v-if="props.useQuickMode === calculator.quickMode">
-        <v-col cols="12" style="text-align: center;">
-            <v-card v-if="category" style="border: thin solid;" class="rounded-pill"
-                :id="`category_${props.categoryId}`">
-                <v-card-text class="text-center">
-                    {{ category.name }}
-                </v-card-text>
-            </v-card>
-            <v-skeleton-loader v-else type="heading"></v-skeleton-loader>
-        </v-col>
-        <v-col v-if="loading" v-for="n in 9" :key="`category_${props.categoryId}_placeholder_${n}`" cols="2"
+        <v-col v-if="loading" v-for="n in 9" cols="2"
             style="padding: 2px;">
             <v-skeleton-loader type="image" style="aspect-ratio: 1;"></v-skeleton-loader>
         </v-col>
         <v-col cols="12" v-else-if="nothingToDisplay">
             <v-alert type="info"
-                :text="`Diese Kategorie ('${category.name}') hat nichts zum Anzeigen, In den Abonnements kannst du Basis-Produkte dieser Kategorie abonnieren, damit sie hier angezeigt werden!`"></v-alert>
+                :text="`Es gibt hier nichts zum Anzeigen, In den Abonnements kannst du Basis-Produkte dieser Kategorie abonnieren, damit sie hier angezeigt werden!`"></v-alert>
         </v-col>
         <v-col cols="12" v-else>
             <GridLayout v-model:layout="usedLayout" @layout-updated="handleLayoutUpdateEvent" :col-num="12"
@@ -28,24 +19,21 @@
         </v-col>
     </v-row>
 </template>
-
 <script setup lang="ts">
 import { GridLayout, Layout } from 'grid-layout-plus'
 import SingleBaseItem from './SingleBaseItem.vue';
 import SingleItem from './SingleItem.vue';
 
-const { api } = useFeathers()
-const usersettings = useUsersettings()
-const calculator = useCalculatorStore()
-
 interface SingleCategoryProps {
-    categoryId: number,
     useQuickMode: boolean
 }
 const props = defineProps<SingleCategoryProps>()
 
-const category = api.service('categories').getFromStore(toRef(props.categoryId))
-const { data: baseItems } = toRefs(api.service('base-items').findInStore(computed(() => ({ query: { categoryId: props.categoryId, id: { $in: usersettings.subscriptions } } }))))
+const usersettings = useUsersettings()
+const calculator = useCalculatorStore()
+const { api } = useFeathers()
+
+const { data: baseItems } = toRefs(api.service('base-items').findInStore(computed(() => ({ query: { id: { $in: usersettings.subscriptions } } }))))
 const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: { $in: baseItems.value.map(({ id }) => id!) } } }))))
 
 const loading = computed(() => {
@@ -61,27 +49,22 @@ const nothingToDisplay = computed(() => {
     return false
 })
 
-const storedQuickLayout = computed(() => {
-    return calculator.quickSeparatedLayout.find(({ categoryId }) => categoryId === props.categoryId)?.layout || []
-})
 const filteredQuickLayout = computed(() => {
-    return storedQuickLayout.value.filter(({ i }) => items.value.map(({ id }) => id).includes(i as number))
+    return calculator.quickMixedLayout.filter(({ i }) => items.value.map(({ id }) => id).includes(i as number))
 })
 const redundantQuickElements = computed(() => {
-    return storedQuickLayout.value.filter(({ i }) => !items.value.map(({ id }) => id).includes(i as number))
-})
-const storedNormalLayout = computed(() => {
-    return calculator.normalSeparatedLayout.find(({ categoryId }) => categoryId === props.categoryId)?.layout || []
+    return calculator.quickMixedLayout.filter(({ i }) => !items.value.map(({ id }) => id).includes(i as number))
 })
 const filteredNormalLayout = computed(() => {
-    return storedNormalLayout.value.filter(({ i }) => baseItems.value.map(({ id }) => id).includes(i as number))
+    return calculator.normalMixedLayout.filter(({ i }) => items.value.map(({ id }) => id).includes(i as number))
 })
 const redundantNormalElements = computed(() => {
-    return storedNormalLayout.value.filter(({ i }) => !baseItems.value.map(({ id }) => id).includes(i as number))
+    return calculator.normalMixedLayout.filter(({ i }) => !items.value.map(({ id }) => id).includes(i as number))
 })
 const usedLayout = computed(() => {
     return props.useQuickMode ? filteredQuickLayout.value : filteredNormalLayout.value
 })
+
 const setupLayout = function () {
     // strategy for the layout is the following
     // as for the model ALWAYS use the stored layout
@@ -101,12 +84,12 @@ const setupLayout = function () {
 
     if (props.useQuickMode) {
         // analyzing current layout, get items that are in the layout but should not be (redundant) and get items that should be but are not (missing)
-        const { missingIds } = getLayoutDiff(storedQuickLayout.value, items.value.map(({ id }) => id!))
+        const { missingIds } = getLayoutDiff(calculator.quickMixedLayout, items.value.map(({ id }) => id!))
         // // remove redundant items from layout
         // let cleanedLayout = storedQuickLayout.value.filter(({ i }) => !redundantIds.includes(i))
         // add missing items
         if (missingIds.length !== 0 /*|| redundantIds.length !== 0*/) {
-            let newLayout = [...storedQuickLayout.value]
+            let newLayout = [...calculator.quickMixedLayout]
             missingIds.forEach(id => {
                 newLayout.push({
                     x: (newLayout.length * 2) % 12, // extracted from documentation
@@ -117,12 +100,12 @@ const setupLayout = function () {
                 })
             })
             // layout got changed so update it in the store
-            calculator.updateQSL(newLayout, props.categoryId)
+            calculator.updateQML(newLayout)
         }
     } else {
-        const { missingIds } = getLayoutDiff(storedNormalLayout.value, baseItems.value.map(({ id }) => id!))
+        const { missingIds } = getLayoutDiff(calculator.normalMixedLayout, baseItems.value.map(({ id }) => id!))
         if (missingIds.length !== 0 /*|| redundantIds.length !== 0*/) {
-            let newLayout = [...storedNormalLayout.value]
+            let newLayout = [...calculator.normalMixedLayout]
             missingIds.forEach(id => {
                 newLayout.push({
                     x: (newLayout.length * 2) % 12, // extracted from documentation
@@ -133,7 +116,7 @@ const setupLayout = function () {
                 })
             })
             // layout got changed so update it in the store
-            calculator.updateNSL(newLayout, props.categoryId)
+            calculator.updateNML(newLayout)
         }
     }
 }
@@ -145,15 +128,15 @@ const handleLayoutUpdateEvent = function (newLayout: Layout) {
     // even if they are not to be displayed due to different subscriptions
     if (props.useQuickMode) {
         if (redundantQuickElements.value.length !== 0) {
-            calculator.updateQSL([...newLayout, ...redundantQuickElements.value], props.categoryId)
+            calculator.updateQML([...newLayout, ...redundantQuickElements.value])
         } else {
-            calculator.updateQSL(newLayout, props.categoryId)
+            calculator.updateQML(newLayout)
         }
     } else {
         if (redundantNormalElements.value.length !== 0) {
-            calculator.updateNSL([...newLayout, ...redundantNormalElements.value], props.categoryId)
+            calculator.updateNML([...newLayout, ...redundantNormalElements.value])
         } else {
-            calculator.updateNSL(newLayout, props.categoryId)
+            calculator.updateNML(newLayout)
         }
     }
 }
@@ -162,7 +145,6 @@ const getLayoutDiff = function (layout: Layout, ids: Array<number | string>) {
     let redundantIds = layout.map(({ i }) => i).filter(i => !ids.includes(i))
     return { missingIds, redundantIds }
 }
-
 
 onMounted(() => {
     setupLayout()
@@ -173,20 +155,13 @@ watch(() => items.value, () => {
 watch(() => baseItems.value, () => {
     setupLayout()
 }, { immediate: true, deep: true })
-watch(() => storedNormalLayout.value, () => {
+watch(() => calculator.normalMixedLayout, () => {
     setupLayout()
 }, { immediate: true, deep: true })
-watch(() => storedQuickLayout.value, () => {
+watch(() => calculator.quickMixedLayout, () => {
     setupLayout()
 }, { immediate: true, deep: true })
 watch(() => usersettings.subscriptions, () => {
     setupLayout()
 }, { immediate: true, deep: true })
 </script>
-
-<style>
-div.v-skeleton-loader__bone.v-skeleton-loader__image {
-    height: 100%;
-    border-radius: 4px;
-}
-</style>

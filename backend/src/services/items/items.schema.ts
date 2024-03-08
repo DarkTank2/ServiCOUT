@@ -26,7 +26,7 @@ export const itemsResolver = resolve<Items, HookContext<ItemsService>>({})
 export const itemsExternalResolver = resolve<Items, HookContext<ItemsService>>({})
 
 // Schema for creating new entries
-export const itemsDataSchema = Type.Pick(itemsSchema, ['id', 'price', 'default', 'baseItemId', 'sizeId', 'flavourId'], {
+export const itemsDataSchema = Type.Pick(itemsSchema, ['price', 'default', 'baseItemId', 'sizeId', 'flavourId'], {
   $id: 'ItemsData'
 })
 export type ItemsData = Static<typeof itemsDataSchema>

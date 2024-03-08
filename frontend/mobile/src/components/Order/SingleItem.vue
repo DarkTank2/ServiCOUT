@@ -179,6 +179,8 @@ const addToOrder = function () {
     if (alreadyFoundItem[0] && alreadyFoundItem[0].comment === comment.value) {
         let clone = alreadyFoundItem[0].clone()
         clone.quantity! += amount.value
+        clone.open! += amount.value
+        clone.notCashed! += amount.value
         clone.commit()
     } else {
         api.service('ordered-items').createInStore({
@@ -186,7 +188,9 @@ const addToOrder = function () {
             quantity: amount.value,
             tenantId: auth.user.tenantId as number,
             comment: comment.value,
-            orderId: 0 // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized
+            orderId: 0, // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized
+            open: amount.value,
+            notCashed: amount.value
         })
     }
     dialogModel.value = false

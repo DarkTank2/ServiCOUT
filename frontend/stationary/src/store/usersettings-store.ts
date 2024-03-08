@@ -11,6 +11,9 @@ export const useUsersettings = defineStore('usersettings', () => {
     const storedSubscriptions = window.localStorage.getItem('subscriptions')
     const subscriptions =       ref<Array<number>>(storedSubscriptions ? JSON.parse(storedSubscriptions) : [])
 
+    const itemDisplayFormat =   ref(window.localStorage.getItem('itemDisplayFormat'))
+    const shortenDisplayName =  ref(true)
+
     const getName =             computed(() => name.value)
     const getSubscriptions =    computed(() => subscriptions.value)
     // const getOnboardingDate = computed(() => onboardedAt.value)
@@ -57,10 +60,18 @@ export const useUsersettings = defineStore('usersettings', () => {
         }
         saveSubscription()
     }
+    const updateItemDisplayFormat = function (format: string) {
+        itemDisplayFormat.value = format
+        window.localStorage.setItem('itemDisplayFormat', format)
+    }
+    const updateShortenDisplayName = function (val: boolean) {
+        shortenDisplayName.value = val
+    }
 
     return {
         name,
         onboarded,
+        shortenDisplayName,
         getName,
         setName,
         finalizeOnboarding,

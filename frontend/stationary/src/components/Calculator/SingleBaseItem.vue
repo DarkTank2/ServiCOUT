@@ -1,12 +1,11 @@
 <template>
-    <v-dialog v-model="dialogModel" fullscreen scrollable :scrim="false" @update:model-value="updateDialog">
+    <v-dialog v-model="dialogModel" scrollable :scrim="false" @update:model-value="updateDialog">
         <template #activator="{ props }">
-            <v-card v-bind="props" :style="style" :disabled="props.disabled || !baseItem.available">
+            <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available">
                 <v-card-text class="text-center mx-auto">
                     {{ `${baseItem.name}` }}
                     <br />
                     <span v-if="!baseItem.available">(ausverkauft)</span>
-                    <slot name="external-disable-message"></slot>
                 </v-card-text>
             </v-card>
         </template>
@@ -65,9 +64,6 @@
                             </template>
                         </v-radio>
                     </v-radio-group>
-                    <v-divider></v-divider>
-                    <v-textarea label="Kommentar" v-model="comment" hint="Füge diesem Item ein Kommentar hinzu."
-                        variant="outlined" density="compact" clearable class="py-5" />
                     <!-- <v-divider></v-divider>
                     <span class="text-body-1">Optionen:</span> -->
                 </v-card-text>
@@ -92,7 +88,7 @@ const auth = useAuthStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
-    itemId: number,
+    baseItemId: number,
     style?: CSSProperties,
     disabled?: boolean
 }>()
@@ -100,11 +96,10 @@ const dialogModel = ref(false)
 const amount = ref(1)
 const sizeId = ref<number | null>(null)
 const flavourId = ref<number | null>(null)
-const comment = ref<string | undefined>(undefined)
 
-const baseItem = api.service('base-items').getFromStore(toRef(props.itemId))
+const baseItem = api.service('base-items').getFromStore(toRef(props.baseItemId))
 
-const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: baseItem.value.id } }))))
+const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: props.baseItemId } }))))
 let sizesQuery = computed(() => ({
     query: { id: { $in: items.value.map(({ sizeId }) => sizeId!) } }
 }))
@@ -151,7 +146,6 @@ const updateDialog = function (modelValue: boolean) {
     amount.value = 1
     flavourId.value = defaultItem.value?.flavourId!
     sizeId.value = defaultItem.value?.sizeId!
-    comment.value = undefined
 }
 const increment = function () {
     amount.value += 1
@@ -169,14 +163,12 @@ const addToOrder = function () {
         query: {
             itemId: selectedItem.value?.id!,
             waiter: usersettings.getName!,
-            tableId: usersettings.getTableId!,
             tenantId: auth.user.tenantId as number,
             __isTemp: true
         },
         temps: true
     })).data
-    // comment is not query-able as of ritgh now, mybe change in future at backend and add it to query here
-    if (alreadyFoundItem[0] && alreadyFoundItem[0].comment === comment.value) {
+    if (alreadyFoundItem[0]) {
         let clone = alreadyFoundItem[0].clone()
         clone.quantity! += amount.value
         clone.commit()
@@ -185,10 +177,9 @@ const addToOrder = function () {
             itemId: selectedItem.value?.id!,
             quantity: amount.value,
             tenantId: auth.user.tenantId as number,
-            comment: comment.value,
             orderId: 0, // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized
-            open: amount.value,
-            notCashed: amount.value
+            open: 0,
+            notCashed: 0
         })
     }
     dialogModel.value = false

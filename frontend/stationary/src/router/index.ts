@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { Component } from 'vue'
 
 import Timer from '@/components/AppBar/Time.vue'
+import ConfigurationMenu from '@/components/Calculator/ConfigurationMenu.vue'
 
 const routes = [
   {
@@ -26,7 +27,8 @@ const routes = [
     name: 'Calculator',
     component: () => import('@/views/Calculator.vue'),
     meta: {
-      appBarComponent: Timer
+      appBarComponent: Timer,
+      appBarAppendix: ConfigurationMenu
     }
   },
   {
@@ -89,6 +91,7 @@ declare module 'vue-router' {
     extension?: Component,
     titleReplacement?: Component,
     appBarComponent?: Component,
+    appBarAppendix?: Component,
     bottomComponent?: Component,
     transition?: string
   }

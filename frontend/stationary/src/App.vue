@@ -8,6 +8,7 @@
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
       <component v-if="meta.appBarComponent" :is="meta.appBarComponent" :style="{ width: '500px' }" />
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
+      <component v-if="meta.appBarAppendix" :is="meta.appBarAppendix" />
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list density="compact" lines="three">
@@ -38,6 +39,7 @@
 <script lang="ts" setup>
 import Notification from './components/Utilities/Notification.vue';
 import Loading from './components/Utilities/Loading.vue';
+import ConfigurationMenu from './components/Calculator/ConfigurationMenu.vue';
 
 const drawer = ref(false)
 

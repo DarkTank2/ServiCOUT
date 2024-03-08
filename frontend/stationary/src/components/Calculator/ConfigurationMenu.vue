@@ -3,11 +3,11 @@
         <template v-slot:activator="{ props }">
             <v-btn icon="mdi-cog" v-bind="props" />
         </template>
-        <v-list>
+        <v-list density="compact">
             <v-tooltip location="bottom">
                 <template #activator="{ props: tProps }">
                     <v-list-item v-bind="tProps">
-                        <v-switch :model-value="calculator.quickMode" @update:model-value="calculator.updateQuickMode" :label="quickModeLabel" color="primary"></v-switch>
+                        <v-switch :model-value="calculator.quickMode" @update:model-value="calculator.updateQuickMode" :label="quickModeLabel" color="primary" hide-details></v-switch>
                     </v-list-item>
                 </template>
                 <span>{{ quickModeTooltip }}</span>
@@ -15,7 +15,7 @@
             <v-tooltip location="bottom">
                 <template #activator="{ props: tProps }">
                     <v-list-item v-bind="tProps">
-                        <v-switch :model-value="calculator.separatedMode" @update:model-value="calculator.updateSeparateMode" :label="separatedModeLabel" color="primary"></v-switch>
+                        <v-switch :model-value="calculator.separatedMode" @update:model-value="calculator.updateSeparateMode" :label="separatedModeLabel" color="primary" hide-details></v-switch>
                     </v-list-item>
                 </template>
                 <span>{{ separatedModeTooltip }}</span>

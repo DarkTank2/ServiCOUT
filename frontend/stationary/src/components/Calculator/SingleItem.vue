@@ -1,7 +1,9 @@
 <template>
-    <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available">
+    <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available" @click="addToOrder" :color="category?.color">
         <v-card-text class="text-center mx-auto">
-            {{ `${displayName}` }}
+            <span>{{ `${displayName}` }}</span>
+            <br />
+            <span>{{ item.price }}€</span>
             <br />
             <span v-if="!baseItem.available">(ausverkauft)</span>
         </v-card-text>
@@ -23,6 +25,7 @@ const props = defineProps<{
 }>()
 const item = api.service('items').getFromStore(toRef(props.itemId))
 const baseItem = api.service('base-items').getFromStore(computed(() => item.value.baseItemId!))
+const category = api.service('categories').getFromStore(computed(() => baseItem.value.categoryId!))
 const size = api.service('sizes').getFromStore(computed(() => item.value.sizeId!))
 const flavour = api.service('base-items').getFromStore(computed(() => item.value.flavourId!))
 

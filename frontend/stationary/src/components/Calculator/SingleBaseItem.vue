@@ -1,7 +1,7 @@
 <template>
-    <v-dialog v-model="dialogModel" scrollable :scrim="false" @update:model-value="updateDialog">
+    <v-dialog v-model="dialogModel" scrollable @update:model-value="updateDialog" width="70%">
         <template #activator="{ props }">
-            <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available">
+            <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available" :color="category?.color">
                 <v-card-text class="text-center mx-auto">
                     {{ `${baseItem.name}` }}
                     <br />
@@ -11,7 +11,7 @@
         </template>
         <template #default="{ isActive }">
             <v-card>
-                <v-system-bar window :style="{ top: '0px' }">
+                <v-system-bar window :style="{ top: '0px', 'border-radius': '4px 4px 0px 0px' }">
                     <v-spacer></v-spacer>
                     <v-btn icon="mdi-close" variant="text" class="ms-2" @click.stop="isActive.value = false"></v-btn>
                 </v-system-bar>
@@ -98,6 +98,7 @@ const sizeId = ref<number | null>(null)
 const flavourId = ref<number | null>(null)
 
 const baseItem = api.service('base-items').getFromStore(toRef(props.baseItemId))
+const category = api.service('categories').getFromStore(computed(() => baseItem.value.categoryId!))
 
 const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: props.baseItemId } }))))
 let sizesQuery = computed(() => ({

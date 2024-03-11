@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { Component } from 'vue'
 
 import Timer from '@/components/AppBar/Time.vue'
+import ShoppingCartSum from '@/components/Calculator/ShoppingCartSum.vue'
 import ConfigurationMenu from '@/components/Calculator/ConfigurationMenu.vue'
 
 const routes = [
@@ -27,7 +28,7 @@ const routes = [
     name: 'Calculator',
     component: () => import('@/views/Calculator.vue'),
     meta: {
-      appBarComponent: Timer,
+      appBarComponent: ShoppingCartSum,
       appBarAppendix: ConfigurationMenu
     }
   },

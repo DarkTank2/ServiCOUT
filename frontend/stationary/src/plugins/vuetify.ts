@@ -27,6 +27,9 @@ export default createVuetify({
   defaults: {
     VAlert: {
       variant: 'outlined'
+    },
+    VTooltip: {
+      maxWidth: 500
     }
   }
 })

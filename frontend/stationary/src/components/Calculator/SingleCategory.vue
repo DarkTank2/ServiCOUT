@@ -19,7 +19,7 @@
         </v-col>
         <v-col cols="12" v-else>
             <GridLayout v-model:layout="usedLayout" @layout-updated="handleLayoutUpdateEvent" :col-num="12"
-                :row-height="30" is-draggable is-resizable vertical-compact use-css-transforms>
+                :row-height="30"  :is-draggable="calculator.editMode" :is-resizable="calculator.editMode" vertical-compact use-css-transforms>
                 <template #item="{ item }">
                     <SingleBaseItem v-if="props.useQuickMode === false" :base-item-id="item.i"></SingleBaseItem>
                     <SingleItem v-if="props.useQuickMode === true" :item-id="item.i"></SingleItem>
@@ -49,7 +49,7 @@ const { data: baseItems } = toRefs(api.service('base-items').findInStore(compute
 const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: { $in: baseItems.value.map(({ id }) => id!) } } }))))
 
 const loading = computed(() => {
-    return api.service('items').store.itemsById.length === 0 && api.service('base-items').store.itemsById.length === 0
+    return api.service('items').store.items.length === 0 && api.service('base-items').store.items.length === 0
 })
 const nothingToDisplay = computed(() => {
     if (loading.value === true) {

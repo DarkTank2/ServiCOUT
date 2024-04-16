@@ -1,19 +1,29 @@
-import { BaseItemsQuery, FlavoursQuery, ItemsHaveOptionsQuery, ItemsQuery, OptionQuery, OrderedItemHasOptionQuery, OrderedItemsQuery, OrdersQuery, RolesQuery, SizesQuery, TablesQuery, TenantQuery, UserQuery } from "backend"
+import { Service } from "@feathersjs/feathers"
+import { BaseItemsQuery, FlavoursQuery, ItemsHaveOptionsQuery, ItemsQuery, OptionQuery, OrderedItemHasOptionQuery, OrderedItemsQuery, OrdersQuery, RolesQuery, ServiceTypes, SizesQuery, TablesQuery, TenantQuery, UserQuery } from "backend"
 import { CategoriesQuery } from "backend/lib/services/categories/categories.class"
+import { SvcParams } from "feathers-pinia/dist/create-pinia-service"
 
 const { api } = useFeathers()
 
-export const fetchAllBaseItems = function (query: BaseItemsQuery, _skip?: number) {
-    api.service('base-items').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+const MAX_RECORDS_PER_FETCH = 200
+
+
+// 200 is the max amount of records to be fetched
+export const fetchAllBaseItems = async function (query: BaseItemsQuery) {
+  let { total: counted } = await api.service('base-items').count({ query })
+  const fetch = (query: BaseItemsQuery, _limit: number, _skip?: number) : void => {
+    api.service('base-items').find({ query: { ...query, $skip: _skip || 0, $limit: _limit } }).then(({ total, skip, data, limit }) => {
         if (data.length === 0) {
-            // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllBaseItems(query, data.length + skip)
+            fetch(query, Math.min(total - data.length - skip, MAX_RECORDS_PER_FETCH), data.length + skip)
           }
     })
+  }
+  fetch(query, Math.min(counted, MAX_RECORDS_PER_FETCH))
 }
+
 export const fetchAllCategories = function (query: CategoriesQuery, _skip?: number) {
     api.service('categories').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
         if (data.length === 0) {

@@ -9,6 +9,9 @@
       <component v-if="meta.appBarComponent" :is="meta.appBarComponent" :style="{ width: '500px' }" />
       <v-spacer v-if="meta.appBarComponent"></v-spacer>
       <component v-if="meta.appBarAppendix" :is="meta.appBarAppendix" />
+      <template v-if="meta.extension" #extension>
+        <component :is="meta.extension" />
+      </template>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list density="compact" lines="three">

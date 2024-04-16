@@ -61,7 +61,6 @@ const addToOrder = function () {
     let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
         query: {
             itemId: props.itemId,
-            waiter: usersettings.getName!,
             tenantId: auth.user.tenantId as number,
             __isTemp: true
         },

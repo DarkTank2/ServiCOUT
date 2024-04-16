@@ -6,6 +6,7 @@ import type { Component } from 'vue'
 import Timer from '@/components/AppBar/Time.vue'
 import ShoppingCartSum from '@/components/Calculator/ShoppingCartSum.vue'
 import ConfigurationMenu from '@/components/Calculator/ConfigurationMenu.vue'
+import ButtonCollection from '@/components/Calculator/ButtonCollection.vue'
 
 const routes = [
   {
@@ -29,7 +30,8 @@ const routes = [
     component: () => import('@/views/Calculator.vue'),
     meta: {
       appBarComponent: ShoppingCartSum,
-      appBarAppendix: ConfigurationMenu
+      appBarAppendix: ConfigurationMenu,
+      extension: ButtonCollection
     }
   },
   {

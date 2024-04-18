@@ -42,7 +42,7 @@
           </v-list>
         </v-card-text>
         <v-card-actions>
-          <v-btn :disabled="populatedOrderedItems.length === 0" @click="sendOrder('station', true)">
+          <v-btn :disabled="populatedOrderedItems.length === 0" @click="cash">
             Bestellung kassieren
           </v-btn>
         </v-card-actions>
@@ -112,5 +112,10 @@ const decrementAtIndex = function (index: number) {
 const incrementAtIndex = function (index: number) {
     let orderedItem = allTempOrderedItems.value[index]
     orderedItem.quantity! += 1
+}
+
+const cash = async function () {
+  await sendOrder('station', true)
+  closeDialog()
 }
 </script>

@@ -16,6 +16,7 @@ import colors from 'vuetify/util/colors'
 const { api } = useFeathers()
 const usersettings = useUsersettings()
 const auth = useAuthStore()
+const calculator = useCalculatorStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
@@ -57,6 +58,9 @@ const displayName = computed(() => {
 })
 
 const addToOrder = function () {
+    if (calculator.editMode) {
+        return
+    }
     // ref needed otherwise __isTemp property cannot be queried
     let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
         query: {

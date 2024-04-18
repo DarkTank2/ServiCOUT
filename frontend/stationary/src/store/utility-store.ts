@@ -12,6 +12,7 @@ export const useUtilityStore = defineStore('utilities', () => {
     const { api } = useFeathers()
     const usersettings = useUsersettings()
     const auth = useAuthStore()
+    const utilities = useUtilityStore()
 
     const fetchPending = ref(false)
     const notification = ref<Notification>({ message: '', type: 'success', timeout: 0 })
@@ -60,7 +61,7 @@ export const useUtilityStore = defineStore('utilities', () => {
             await tempOrderedItem.save()
         }
         resetFetchPending()
-        setNotification({ message: 'Bestellung erfolgreich abgesendet!', type: 'success', timeout: -1 })
+        utilities.setNotification({ message: 'Bestellung erfolgreich abgesendet!', type: 'success', timeout: 2000 })
     }
 
     return {
@@ -72,6 +73,7 @@ export const useUtilityStore = defineStore('utilities', () => {
         resetFetchPending,
         setNotification,
         resetNotification,
-        sendOrder
+        sendOrder,
+        tempOrder: allTempOrderedItems
     }
 })

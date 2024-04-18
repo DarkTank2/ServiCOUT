@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialogModel" scrollable @update:model-value="updateDialog" width="70%">
-        <template #activator="{ props }">
-            <v-card v-bind="props" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available" :color="category?.color">
+        <template #activator>
+            <v-card @click="openDialog" :style="{ height: '100%', ...style }" :disabled="props.disabled || !baseItem.available" :color="category?.color">
                 <v-card-text class="text-center mx-auto">
                     {{ `${baseItem.name}` }}
                     <br />
@@ -85,6 +85,7 @@ import colors from 'vuetify/util/colors'
 const { api } = useFeathers()
 const usersettings = useUsersettings()
 const auth = useAuthStore()
+const calculator = useCalculatorStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
@@ -144,6 +145,7 @@ const style = computed(() => {
 
 const updateDialog = function (modelValue: boolean) {
     // if the dialog gets opened or closed always reset everything, do this on open as well as close because it is easier
+    dialogModel.value = modelValue
     amount.value = 1
     flavourId.value = defaultItem.value?.flavourId!
     sizeId.value = defaultItem.value?.sizeId!
@@ -186,5 +188,12 @@ const addToOrder = function () {
     dialogModel.value = false
     updateDialog(false)
     // utilities.setNotification({ message: `${amount.value} x ${baseItem.value.name} wurde erfolgreich zur Bestellung hinzugefügt!`, timeout: 3000, type: 'success' })
+}
+
+const openDialog = function () {
+    if (calculator.editMode) {
+        return
+    }
+    updateDialog(true)
 }
 </script>

@@ -11,159 +11,159 @@ const MAX_RECORDS_PER_FETCH = 200
 // 200 is the max amount of records to be fetched
 export const fetchAllBaseItems = async function (query: BaseItemsQuery) {
   let { total: counted } = await api.service('base-items').count({ query })
-  const fetch = (query: BaseItemsQuery, _limit: number, _skip?: number) : void => {
-    api.service('base-items').find({ query: { ...query, $skip: _skip || 0, $limit: _limit } }).then(({ total, skip, data, limit }) => {
+  const fetch = async (query: BaseItemsQuery, _limit: number, _skip?: number) : Promise<void> => {
+    await api.service('base-items').find({ query: { ...query, $skip: _skip || 0, $limit: _limit } }).then(async ({ total, skip, data, limit }) => {
         if (data.length === 0) {
             return
           }
           if (data.length + skip !== total) {
-            fetch(query, Math.min(total - data.length - skip, MAX_RECORDS_PER_FETCH), data.length + skip)
+            await fetch(query, Math.min(total - data.length - skip, MAX_RECORDS_PER_FETCH), data.length + skip)
           }
     })
   }
-  fetch(query, Math.min(counted, MAX_RECORDS_PER_FETCH))
+  await fetch(query, Math.min(counted, MAX_RECORDS_PER_FETCH))
 }
 
-export const fetchAllCategories = function (query: CategoriesQuery, _skip?: number) {
-    api.service('categories').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllCategories = async function (query: CategoriesQuery, _skip?: number) {
+    await api.service('categories').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllCategories(query, data.length + skip)
+            await fetchAllCategories(query, data.length + skip)
           }
     })
 }
-export const fetchAllFlavours = function (query: FlavoursQuery, _skip?: number) {
-    api.service('flavours').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllFlavours = async function (query: FlavoursQuery, _skip?: number) {
+    await api.service('flavours').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllFlavours(query, data.length + skip)
+            await fetchAllFlavours(query, data.length + skip)
           }
     })
 }
-export const fetchAllItems = function (query: ItemsQuery, _skip?: number) {
-    api.service('items').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllItems = async function (query: ItemsQuery, _skip?: number) {
+    await api.service('items').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllItems(query, data.length + skip)
+            await fetchAllItems(query, data.length + skip)
           }
     })
 }
-export const fetchAllItemOptionMaps = function (query: ItemsHaveOptionsQuery, _skip?: number) {
-    api.service('items-have-options').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllItemOptionMaps = async function (query: ItemsHaveOptionsQuery, _skip?: number) {
+    await api.service('items-have-options').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllItemOptionMaps(query, data.length + skip)
+            await fetchAllItemOptionMaps(query, data.length + skip)
           }
     })
 }
-export const fetchAllOptions = function (query: OptionQuery, _skip?: number) {
-    api.service('options').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllOptions = async function (query: OptionQuery, _skip?: number) {
+    await api.service('options').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllOptions(query, data.length + skip)
+            await fetchAllOptions(query, data.length + skip)
           }
     })
 }
-export const fetchAllOrderedItems = function (query: OrderedItemsQuery, _skip?: number) {
-    api.service('ordered-items').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllOrderedItems = async function (query: OrderedItemsQuery, _skip?: number) {
+    await api.service('ordered-items').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllOrderedItems(query, data.length + skip)
+            await fetchAllOrderedItems(query, data.length + skip)
           }
     })
 }
-export const fetchAllOrderedItemsOptionMaps = function (query: OrderedItemHasOptionQuery, _skip?: number) {
-    api.service('ordered-items-have-options').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllOrderedItemsOptionMaps = async function (query: OrderedItemHasOptionQuery, _skip?: number) {
+    await api.service('ordered-items-have-options').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllOrderedItemsOptionMaps(query, data.length + skip)
+            await fetchAllOrderedItemsOptionMaps(query, data.length + skip)
           }
     })
 }
-export const fetchAllOrders = function (query: OrdersQuery, _skip?: number) {
-    api.service('orders').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllOrders = async function (query: OrdersQuery, _skip?: number) {
+    await api.service('orders').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllOrders(query, data.length + skip)
+            await fetchAllOrders(query, data.length + skip)
           }
     })
 }
-export const fetchAllRoles = function (query: RolesQuery, _skip?: number) {
-    api.service('roles').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllRoles = async function (query: RolesQuery, _skip?: number) {
+    await api.service('roles').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllRoles(query, data.length + skip)
+            await fetchAllRoles(query, data.length + skip)
           }
     })
 }
-export const fetchAllSizes = function (query: SizesQuery, _skip?: number) {
-    api.service('sizes').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllSizes = async function (query: SizesQuery, _skip?: number) {
+    await api.service('sizes').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllSizes(query, data.length + skip)
+            await fetchAllSizes(query, data.length + skip)
           }
     })
 }
-export const fetchAllTables = function (query: TablesQuery, _skip?: number) {
-    api.service('tables').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllTables = async function (query: TablesQuery, _skip?: number) {
+    await api.service('tables').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllTables(query, data.length + skip)
+            await fetchAllTables(query, data.length + skip)
           }
     })
 }
-export const fetchAllTenants = function (query: TenantQuery, _skip?: number) {
-    api.service('tenants').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllTenants = async function (query: TenantQuery, _skip?: number) {
+    await api.service('tenants').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllTenants(query, data.length + skip)
+            await fetchAllTenants(query, data.length + skip)
           }
     })
 }
-export const fetchAllUsers = function (query: UserQuery, _skip?: number) {
-    api.service('users').find({ query: { ...query, $skip: _skip || 0 } }).then(({ total, skip, data }) => {
+export const fetchAllUsers = async function (query: UserQuery, _skip?: number) {
+    await api.service('users').find({ query: { ...query, $skip: _skip || 0 } }).then(async ({ total, skip, data }) => {
         if (data.length === 0) {
             // empty data, thu no data istransferred and there is no more data
             return
           }
           if (data.length + skip !== total) {
-            fetchAllUsers(query, data.length + skip)
+            await fetchAllUsers(query, data.length + skip)
           }
     })
 }

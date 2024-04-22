@@ -21,7 +21,7 @@
         <v-list-item :to="{ name: 'Calculator' }" title="Rechner" subtitle="Aufnahme von Bestellungen vor Ort" prepend-icon="mdi-calculator-variant-outline"></v-list-item>
         <v-list-item :to="{ name: 'Subscriptions' }" title="Abonnements" subtitle="Einstellung, welche Produkte angezeigt werden" prepend-icon="mdi-tag-check-outline"></v-list-item>
         <v-list-item :to="{ name: 'ItemManager' }" title="Item-Manager" subtitle="Deaktivieren von leeren Produkten" prepend-icon="mdi-tag-off-outline"></v-list-item>
-        <v-list-item :to="{ name: 'base' }" title="Statistiken" subtitle="Zeitlicher Verlauf von einem oder mehreren Produkten" prepend-icon="mdi-chart-line"></v-list-item>
+        <v-list-item :to="{ name: 'Statistics' }" title="Statistiken" subtitle="Zeitlicher Verlauf von einem oder mehreren Produkten" prepend-icon="mdi-chart-line"></v-list-item>
         <v-list-item :to="{ name: 'base' }" title="Verlauf" subtitle="Verlauf von verkauften Produkten dieser Station" prepend-icon="mdi-history"></v-list-item>
         <v-list-item :to="{ name: 'base' }" title="Tastenkombinationen" subtitle="Hinzufügen eines Produktes mittels Tastendruck konfigurieren" prepend-icon="mdi-keyboard-outline"></v-list-item>
         <v-list-item :to="{ name: 'GlobalConfig' }" title="Konfiguration" subtitle="Nur für Administratoren!" prepend-icon="mdi-cog"></v-list-item>
@@ -50,11 +50,11 @@ const authStore = useAuthStore()
 
 const { api } = useFeathers()
 
-onMounted(async () => {
-  let res = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
-  console.log(res)
-  api.service('tenants').find({ query: { id: 2 } })
-})
+// onMounted(async () => {
+//   let res = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
+//   console.log(res)
+//   api.service('tenants').find({ query: { id: 2 } })
+// })
 
 const route = useRoute()
 const meta = computed(() => {

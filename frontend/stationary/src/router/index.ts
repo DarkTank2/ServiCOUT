@@ -48,6 +48,11 @@ const routes = [
     path: '/configuration',
     name: 'GlobalConfig',
     component: () => import('@/views/GlobalConfig.vue')
+  },
+  {
+    path: '/statistics',
+    name: 'Statistics',
+    component: () => import('@/views/Statistics.vue')
   }
 ]
 
@@ -83,6 +88,7 @@ router.beforeEach(async (to, from) => {
 
   // always resolves. no need to catch
   await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
+  await authStore.getPromise()
 
   return true
 })

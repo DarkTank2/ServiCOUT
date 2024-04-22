@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import SeparatedWrapper from '@/components/Calculator/SeparatedWrapper.vue';
 import MixedWrapper from '@/components/Calculator/MixedWrapper.vue'
+const { api } = useFeathers()
 const calculator = useCalculatorStore()
 const fetch = useFetchUtility()
 fetch.fetchAllBaseItems({})
@@ -15,4 +16,5 @@ fetch.fetchAllFlavours({})
 fetch.fetchAllItems({})
 fetch.fetchAllSizes({})
 fetch.fetchAllTables({})
+api.service('tenants').find({ query: { id: 2 } })
 </script>

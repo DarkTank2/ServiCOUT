@@ -26,6 +26,7 @@ fetchAllSizes({})
 // fetchAllOptions({})
 fetchAllFlavours({})
 fetchAllItems({})
+api.service('tenants').find({ query: { id: 2 } })
 
 const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { finished: false } }))))
 </script>

@@ -17,7 +17,8 @@
                     'Wähle zuerst einen Nutzer aus!' }}
                                             </span>
                                             <span v-else key="1">
-                                                {{ selectedUsername ? `${selectedUsername} von ${fullStartTimestamp} bis ${fullEndTimestamp}` : '...' }}
+                                                {{ selectedUsername ? `${selectedUsername} von ${fullStartTimestamp} bis
+                                                ${fullEndTimestamp}` : '...' }}
                                             </span>
                                         </v-fade-transition>
                                     </v-col>
@@ -96,11 +97,13 @@
                                         @update:model-value="timeframeManuallyFixed = true" />
                                 </v-col>
                                 <v-col cols="3">
-                                    <v-checkbox v-model="timeframeManuallyFixed" label="Nur manuelle Zeitrahmenanpassung zulassen"></v-checkbox>
+                                    <v-checkbox v-model="timeframeManuallyFixed"
+                                        label="Nur manuelle Zeitrahmenanpassung zulassen"></v-checkbox>
                                 </v-col>
                                 <v-col cols="3">
-                                    <v-select label="Zeitscheibenbreite" v-model="timeframeFormat" :items="timeframeSelectionItems"
-                                        variant="outlined" hide-details item-title="name" item-value="value">
+                                    <v-select label="Zeitscheibenbreite" v-model="timeframeFormat"
+                                        :items="timeframeSelectionItems" variant="outlined" hide-details
+                                        item-title="name" item-value="value">
                                         <template #selection="{ item }">
                                             <v-chip>
                                                 <span>{{ item.title }}</span>
@@ -119,22 +122,25 @@
                 <Line :data="dataset" :options="options" />
             </v-col>
         </v-row>
+        <export v-model:include-headers="exportIncludeHeaders" v-model:headers="headers"
+            v-model:include-all-items="exportIncludeAllItems" :data="orderedItemsForDataset" @save="downloadData" />
     </v-container>
 </template>
 <script setup lang="ts">
 import DatePicker from '@/components/Utilities/DatePicker.vue'
 import TimePicker from '@/components/Utilities/TimePicker.vue'
+import Export from '@/components/Statistics/Export.vue';
 import moment from 'moment';
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, ChartData, PointElement } from 'chart.js'
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
 )
 
 const { api } = useFeathers()
@@ -169,7 +175,9 @@ const timeframeSelectionItems = ref<Array<{ name: string, value: 'hour' | 'day' 
         value: 'month'
     }
 ])
-const innerHeight = window.innerHeight - 64
+const exportIncludeHeaders = ref<boolean>(true)
+const exportIncludeAllItems = ref<boolean>(false)
+const headers = ref<Array<'date' | 'time' | 'item' | 'quantity' | 'price' | 'timestamp' | undefined | null>>(['date', 'time', 'item', 'quantity', 'price', 'timestamp'])
 
 const startTimeUpperLimit = computed(() => {
     // only restrict time if the dates are the same and not null
@@ -197,13 +205,13 @@ const { data: allOrders } = toRefs(api.service('orders').findInStore(computed(()
 const countedOrdersByName = api.service('orders').countInStore(computed(() => ({ query: { waiter: selectedUsername.value } })))
 const { data: allOrdersByName } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { waiter: selectedUsername.value }, $limit: countedOrdersByName.value }))))
 
-const countedOrderedItemsByName = api.service('ordered-items').countInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) } } })))
-const { data: allOrderedItemsByName } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) } }, $limit: countedOrderedItemsByName.value }))))
+const countedOrderedItemsByName = api.service('ordered-items').countInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) }, notCashed: 0 } })))
+const { data: allOrderedItemsByName } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) }, notCashed: 0 }, $limit: countedOrderedItemsByName.value }))))
 
 // section, where the ordered items are computed by name AND selected items
 // the orders can be taken from above since "by name" is a superset of "by name and selection"
-const countedOrderedItemsByNameAndSelection = api.service('ordered-items').countInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) } } })))
-const { data: allOrderedItemsByNameAndSelection } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) }, itemId: { $in: selectedItems.value }, $sort: { id: 1 } }, $limit: countedOrderedItemsByNameAndSelection.value }))))
+const countedOrderedItemsByNameAndSelection = api.service('ordered-items').countInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) }, notCashed: 0 } })))
+const { data: allOrderedItemsByNameAndSelection } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: { $in: allOrdersByName.value.map(({ id }) => id!) }, itemId: { $in: selectedItems.value }, notCashed: 0, $sort: { id: 1 } }, $limit: countedOrderedItemsByNameAndSelection.value }))))
 
 // just all misc objects
 const countedItems = api.service('items').countInStore({ query: {} })
@@ -356,6 +364,14 @@ const updateSelection = async function (changedProperty: 'username' | 'categorie
             endDate.value = new Date((end as moment.Moment).toISOString())
             endTime.value = (end as moment.Moment).format('HH:mm')
         }
+        let duration = moment.duration((end as unknown as moment.Moment).diff((start as unknown as moment.Moment)))
+        if (duration.asHours() <= 48) {
+            timeframeFormat.value = 'hour'
+        } else if (duration.asMonths() <= 2) {
+            timeframeFormat.value = 'day'
+        } else {
+            timeframeFormat.value = 'month'
+        }
     }
 }
 
@@ -371,8 +387,8 @@ const orderedItemsForDataset = computed(() => {
 
 const dataset = computed<ChartData<'line'>>(() => {
     let timeslices: Array<{ start: moment.Moment, end: moment.Moment }> = []
-    let labels:     Array<string> = []
-    let datasets:   Array<{ label: string, data: Array<number>, itemId: number }> = orderedItemsForDataset.value
+    let labels: Array<string> = []
+    let datasets: Array<{ label: string, data: Array<number>, itemId: number }> = orderedItemsForDataset.value
         .map(({ itemId }) => itemId!)
         .reduce((acc, val) => {
             if (!acc.includes(val)) {
@@ -391,8 +407,8 @@ const dataset = computed<ChartData<'line'>>(() => {
         })
     if (timeframeFormat.value === 'hour') {
         let start = datasetStart.value.clone().startOf('hour')
-        let end =   datasetEnd.value.clone().endOf('hour')
-        let cur =   start.clone()
+        let end = datasetEnd.value.clone().endOf('hour')
+        let cur = start.clone()
         while (cur.isBefore(end)) {
             timeslices.push({ start: cur.clone(), end: cur.add(1, 'hour').clone() })
         }
@@ -409,8 +425,8 @@ const dataset = computed<ChartData<'line'>>(() => {
         })
     } else if (timeframeFormat.value === 'day') {
         let start = datasetStart.value.clone().startOf('day')
-        let end =   datasetEnd.value.clone().endOf('day')
-        let cur =   start.clone()
+        let end = datasetEnd.value.clone().endOf('day')
+        let cur = start.clone()
         while (cur.isBefore(end)) {
             timeslices.push({ start: cur.clone(), end: cur.add(1, 'day').clone() })
         }
@@ -427,8 +443,8 @@ const dataset = computed<ChartData<'line'>>(() => {
         })
     } else {
         let start = datasetStart.value.clone().startOf('month')
-        let end =   datasetEnd.value.clone().endOf('month')
-        let cur =   start.clone()
+        let end = datasetEnd.value.clone().endOf('month')
+        let cur = start.clone()
         while (cur.isBefore(end)) {
             timeslices.push({ start: cur.clone(), end: cur.add(1, 'month').clone() })
         }
@@ -461,6 +477,93 @@ const options = computed(() => {
     return {
         responsive: true,
         maintainAspectRation: true
+    }
+})
+const downloadData = function () {
+    const lines: Array<string> = []
+    let alertText = ''
+    if (exportIncludeHeaders.value) {
+        lines.push(headerLine.value)
+    }
+    lines.push(...orderedItemsForDataset.value.map(orderedItem => {
+        let item = api.service('items').getFromStore(orderedItem.itemId!)
+        let size = api.service('sizes').getFromStore(item.value.sizeId!)
+        let flavour = api.service('flavours').getFromStore(item.value.flavourId!)
+        let baseItem = api.service('base-items').getFromStore(item.value.baseItemId!)
+        return {
+            date: moment(orderedItem.createdAt).format('YYYY-MM-DD'),
+            time: moment(orderedItem.createdAt).format('HH:mm:ss'),
+            timestamp: moment(orderedItem.createdAt).format(),
+            price: item.value.price!,
+            item: `${size.value.name} ${baseItem.value.name} ${flavour.value.name}`,
+            quantity: orderedItem.quantity!
+        }
+    }).map(lineConstructor.value))
+    if (exportIncludeAllItems.value) {
+        alertText = 'Kopiere folgenden Befehl "=SUMMEWENNS(D:D;C:C;H1)" und füge ihn in der eben heruntergeladenen CSV-Datei in Zelle "I1" ein. Ziehe dann den Inhalt der Zelle für alle Produkte weiter nach unten und du siehst den gesamten Verbrauch für jedes Produkt!'
+        let allItems = orderedItemsForDataset.value.map(({ itemId }) => itemId!).reduce((acc, val) => {
+            if (!acc.includes(val)) {
+                acc.push(val)
+            }
+            return acc
+        }, new Array<number>()).map(itemId => {
+            let item = api.service('items').getFromStore(itemId)
+            let size = api.service('sizes').getFromStore(item.value.sizeId!)
+            let flavour = api.service('flavours').getFromStore(item.value.flavourId!)
+            let baseItem = api.service('base-items').getFromStore(item.value.baseItemId!)
+            return `${size.value.name} ${baseItem.value.name} ${flavour.value.name}`
+        })
+        let offset = 0
+        if (exportIncludeHeaders.value) {
+            lines[0] += ';;Alle Produkte;'
+            offset = 1
+            alertText = 'Kopiere folgenden Befehl "=SUMMEWENNS(D:D;C:C;H2)" und füge ihn in der eben heruntergeladenen CSV-Datei in Zelle "I2" ein. Ziehe dann den Inhalt der Zelle für alle Produkte weiter nach unten und du siehst den gesamten Verbrauch für jedes Produkt!'
+        }
+        allItems.forEach((item, index) => {
+            lines[index + offset] += `;;${item};`
+        })
+    }
+    let fileName = `${selectedUsername.value}_${datasetStart.value.format()}_${datasetEnd.value.format()}.csv`
+    let data = lines.join('\r\n')
+    let element = document.createElement('a')
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data))
+    element.setAttribute('download', fileName)
+    element.style.display = 'none'
+    document.body.appendChild(element)
+    element.click()
+    document.body.removeChild(element)
+    if (alertText !== '') {
+        window.alert(alertText)
+    }
+}
+const headerLine = computed(() => {
+    return headers.value.map(header => {
+        switch (header) {
+            case 'date':
+                return 'Datum'
+            case 'item':
+                return 'Produkt'
+            case 'price':
+                return 'Preis'
+            case 'quantity':
+                return 'Anzahl'
+            case 'time':
+                return 'Zeit'
+            case 'timestamp':
+                return 'Zeitstempel'
+            default:
+                return ''
+        }
+    }).join(';')
+})
+const lineConstructor = computed(() => {
+    return (modifiedOrderedItem: { date: string, time: string, timestamp: string, price: number, item: string, quantity: number }) => {
+        return headers.value.map(header => {
+            if (!header) {
+                return
+            }
+            return modifiedOrderedItem[header]
+        }).join(';')
     }
 })
 </script>

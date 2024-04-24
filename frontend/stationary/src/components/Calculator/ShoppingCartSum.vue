@@ -23,6 +23,6 @@ const rawPrice = computed(() => {
     }, 0)
 })
 const beautifiedPrice = computed(() => {
-    return Math.floor(rawPrice.value * 100) / 100
+    return Math.round(rawPrice.value * 100) / 100
 })
 </script>

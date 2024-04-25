@@ -119,11 +119,43 @@
         </v-row>
         <v-row>
             <v-col cols="12">
-                <Line :data="dataset" :options="options" />
+                <v-window v-model="windowModel" show-arrows>
+                    <template #next="{ props }">
+                        <v-btn @click="props.onClick" variant="outlined" rounded>
+                            <v-icon icon="mdi-numeric"></v-icon>
+                            <v-icon icon="mdi-chevron-right"></v-icon>
+                        </v-btn>
+                    </template>
+                    <template #prev="{ props }">
+                        <v-btn @click="props.onClick" variant="outlined" rounded>
+                            <v-icon icon="mdi-chevron-left"></v-icon>
+                            <v-icon icon="mdi-chart-line"></v-icon>
+                        </v-btn>
+                    </template>
+                    <v-window-item>
+                        <Line :data="dataset" :options="options" />
+                    </v-window-item>
+                    <v-window-item>
+                        <v-container>
+                            <v-list :opened="kpisPerBaseItem.map(({ baseItemId }) => baseItemId)">
+                                <v-list-group v-for="baseItem of kpisPerBaseItem" :value="baseItem.baseItemId">
+                                    <template #activator>
+                                        <v-list-item :title="baseItem.baseItemName" />
+                                    </template>
+                                    <v-list-item v-for="item of baseItem.items" :title="item.name">
+                                        <template #append>
+                                            <span>{{ item.quantity }}</span>
+                                        </template>
+                                    </v-list-item>
+                                </v-list-group>
+                            </v-list>
+                        </v-container>
+                    </v-window-item>
+                </v-window>
             </v-col>
         </v-row>
         <export v-model:include-headers="exportIncludeHeaders" v-model:headers="headers"
-            v-model:include-all-items="exportIncludeAllItems" :data="orderedItemsForDataset" @save="downloadData" />
+            v-model:include-k-p-is="exportIncludeKPIs" :data="orderedItemsForDataset" @save="downloadData" />
     </v-container>
 </template>
 <script setup lang="ts">
@@ -159,6 +191,7 @@ const startDate = ref<Date | null>(null)
 const startTime = ref<string>()
 const endDate = ref<Date | null>(null)
 const endTime = ref<string>()
+const windowModel = ref<number>(0)
 const timeframeManuallyFixed = ref<boolean>(false)
 const timeframeFormat = ref<'hour' | 'day' | 'month'>('hour')
 const timeframeSelectionItems = ref<Array<{ name: string, value: 'hour' | 'day' | 'month' }>>([
@@ -176,7 +209,7 @@ const timeframeSelectionItems = ref<Array<{ name: string, value: 'hour' | 'day' 
     }
 ])
 const exportIncludeHeaders = ref<boolean>(true)
-const exportIncludeAllItems = ref<boolean>(false)
+const exportIncludeKPIs = ref<boolean>(false)
 const headers = ref<Array<'date' | 'time' | 'item' | 'quantity' | 'price' | 'timestamp' | undefined | null>>(['date', 'time', 'item', 'quantity', 'price', 'timestamp'])
 
 const startTimeUpperLimit = computed(() => {
@@ -499,28 +532,16 @@ const downloadData = function () {
             quantity: orderedItem.quantity!
         }
     }).map(lineConstructor.value))
-    if (exportIncludeAllItems.value) {
+    if (exportIncludeKPIs.value) {
         alertText = 'Kopiere folgenden Befehl "=SUMMEWENNS(D:D;C:C;H1)" und füge ihn in der eben heruntergeladenen CSV-Datei in Zelle "I1" ein. Ziehe dann den Inhalt der Zelle für alle Produkte weiter nach unten und du siehst den gesamten Verbrauch für jedes Produkt!'
-        let allItems = orderedItemsForDataset.value.map(({ itemId }) => itemId!).reduce((acc, val) => {
-            if (!acc.includes(val)) {
-                acc.push(val)
-            }
-            return acc
-        }, new Array<number>()).map(itemId => {
-            let item = api.service('items').getFromStore(itemId)
-            let size = api.service('sizes').getFromStore(item.value.sizeId!)
-            let flavour = api.service('flavours').getFromStore(item.value.flavourId!)
-            let baseItem = api.service('base-items').getFromStore(item.value.baseItemId!)
-            return `${size.value.name} ${baseItem.value.name} ${flavour.value.name}`
-        })
         let offset = 0
         if (exportIncludeHeaders.value) {
             lines[0] += ';;Alle Produkte;'
             offset = 1
             alertText = 'Kopiere folgenden Befehl "=SUMMEWENNS(D:D;C:C;H2)" und füge ihn in der eben heruntergeladenen CSV-Datei in Zelle "I2" ein. Ziehe dann den Inhalt der Zelle für alle Produkte weiter nach unten und du siehst den gesamten Verbrauch für jedes Produkt!'
         }
-        allItems.forEach((item, index) => {
-            lines[index + offset] += `;;${item};`
+        kpis.value.filter(({ quantity }) => quantity !== 0).forEach(({ name, quantity }, index) => {
+            lines[index + offset] += `;;${name};${quantity};`
         })
     }
     let fileName = `${selectedUsername.value}_${datasetStart.value.format()}_${datasetEnd.value.format()}.csv`
@@ -536,6 +557,29 @@ const downloadData = function () {
         window.alert(alertText)
     }
 }
+const kpis = computed(() => {
+    return selectedItems.value.map(itemId => {
+        let item = api.service('items').getFromStore(itemId)
+        let size = api.service('sizes').getFromStore(item.value.sizeId!)
+        let flavour = api.service('flavours').getFromStore(item.value.flavourId!)
+        let baseItem = api.service('base-items').getFromStore(item.value.baseItemId!)
+        return { name: `${size.value.name} ${baseItem.value.name} ${flavour.value.name}`, itemId, quantity: orderedItemsForDataset.value.filter(orderedItem => orderedItem.itemId === itemId).reduce((acc, { quantity }) => acc + quantity!, 0) }
+    }).sort(({ itemId: itemIdA }, { itemId: itemIdB }) => itemIdA - itemIdB)
+})
+const kpisPerBaseItem = computed(() => {
+    return kpis.value.reduce((acc, kpiItem) => {
+        let item = api.service('items').getFromStore(kpiItem.itemId)
+        let baseItem = api.service('base-items').getFromStore(item.value.baseItemId!)
+        let foundKPIBaseItem = acc.find(({ baseItemId }) => baseItemId === baseItem.value.id)
+        if (!foundKPIBaseItem) {
+            foundKPIBaseItem = { baseItemName: baseItem.value.name!, baseItemId: baseItem.value.id!, items: new Array<{ name: string, itemId: number, quantity: number }>() }
+            acc.push(foundKPIBaseItem)
+        }
+        foundKPIBaseItem.items.push(kpiItem)
+        return acc
+    }, new Array<{ baseItemName: string, baseItemId: number, items: Array<{ name: string, itemId: number, quantity: number }> }>())
+    .sort((a, b) => a.baseItemId - b.baseItemId)
+})
 const headerLine = computed(() => {
     return headers.value.map(header => {
         switch (header) {

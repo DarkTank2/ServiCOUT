@@ -14,12 +14,15 @@
                                     color="primary"></v-switch>
                             </v-col>
                             <v-col cols="6">
-                                <v-switch v-model="includeAllItems" label="Füge eine Liste alle Produkte in der Datei hinzu"
-                                    color="primary"></v-switch>
+                                <v-switch v-model="includeKPIs" label="Füge eine Liste alle Produkte sowie deren Verbrauch in der Datei hinzu"
+                                    color="primary" persistent-hint hint="Ausgewählte Produkte ohne Verbrauch werden nicht exportiert!"></v-switch>
                             </v-col>
                             <v-col cols="2" v-for="i in 6" :key="`header_select_index_${i - 1}`">
                                 <v-select v-model="headers[i - 1]" :label="`Spalte #${i}`" :items="possibleHeaders"
                                     item-value="value" item-title="title" clearable variant="outlined"></v-select>
+                            </v-col>
+                            <v-col cols="12">
+                                <span class="text-h6">Vorschau (max. fünf Produkte):</span>
                             </v-col>
                             <v-col cols="12" class="px-0">
                                 <v-data-table :headers="modifiedHeaders" :items="modifiedData"
@@ -55,7 +58,7 @@ const { api } = useFeathers()
 const dialog = ref<boolean>(false)
 
 const includeHeaders = defineModel<boolean>('includeHeaders', { required: true })
-const includeAllItems = defineModel<boolean>('includeAllItems', { required: true })
+const includeKPIs = defineModel<boolean>('includeKPIs', { required: true })
 type HeaderValue = 'date' | 'time' | 'item' | 'quantity' | 'price' | 'timestamp' | undefined | null
 const headers = defineModel<Array<HeaderValue>>('headers', { required: true })
 const possibleHeaders = [

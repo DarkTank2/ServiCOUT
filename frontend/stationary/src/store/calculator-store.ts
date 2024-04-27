@@ -45,6 +45,7 @@ export const useCalculatorStore = defineStore('calculator', () => {
     const separatedMode = ref(window.localStorage.getItem('separatedMode') !== 'false')
     const quickMode = ref(window.localStorage.getItem('quickMode') === 'true')
     const editMode = ref(false)
+    const immediatelyFinishedMode = ref(true)
     const shoppingCartMethod = ref<() => void>(() => {})
 
     const mixedLayout = computed(() => {
@@ -64,6 +65,9 @@ export const useCalculatorStore = defineStore('calculator', () => {
     }
     const updateEditMode = function (val: boolean) {
         editMode.value = val
+    }
+    const updateImmediatelyFinishedMode = function (val: boolean) {
+        immediatelyFinishedMode.value = val
     }
     const updateQML = function (newLayout: Layout) {
         if (!isEqualLayout(quickMixedLayout.value, newLayout)) {
@@ -110,11 +114,13 @@ export const useCalculatorStore = defineStore('calculator', () => {
         separatedMode,
         quickMode,
         editMode,
+        immediatelyFinishedMode,
         mixedLayout,
         separatedLayout,
         updateSeparateMode,
         updateQuickMode,
         updateEditMode,
+        updateImmediatelyFinishedMode,
         updateQML,
         updateNML,
         updateQSL,

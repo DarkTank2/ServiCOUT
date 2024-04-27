@@ -1,4 +1,5 @@
 import { defineStore } from "pinia"
+import { RouteLocationRaw } from "vue-router"
 
 type Notification = {
     message: string,
@@ -16,6 +17,7 @@ export const useUtilityStore = defineStore('utilities', () => {
 
     const fetchPending = ref(false)
     const notification = ref<Notification>({ message: '', type: 'success', timeout: 0 })
+    const storedRoute = ref<RouteLocationRaw>()
 
     const isFetchPending = computed(() => fetchPending.value)
     const getNotification = computed(() => notification.value)
@@ -32,6 +34,10 @@ export const useUtilityStore = defineStore('utilities', () => {
     }
     function resetNotification () {
         notification.value = { message: '', type: 'success', timeout: 0 }
+    }
+
+    function setStoredRoute (value: RouteLocationRaw) {
+        storedRoute.value = value
     }
 
     const countTempOrderedItems = api.service('ordered-items').countInStore(computed(() => ({ query: { __isTemp: true }, temps: true }))) as any as ComputedRef<number>
@@ -67,12 +73,14 @@ export const useUtilityStore = defineStore('utilities', () => {
     return {
         fetchPending,
         notification,
+        storedRoute,
         isFetchPending,
         getNotification,
         setFetchPending,
         resetFetchPending,
         setNotification,
         resetNotification,
+        setStoredRoute,
         sendOrder,
         tempOrder: allTempOrderedItems
     }

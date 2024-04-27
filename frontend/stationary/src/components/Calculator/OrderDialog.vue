@@ -53,6 +53,7 @@
 const { api } = useFeathers()
 const { registerShoppingCart, removeShoppingCart } = useCalculatorStore()
 const { sendOrder } = useUtilityStore()
+const calculator = useCalculatorStore()
 const model = defineModel<boolean>()
 registerShoppingCart(() => { model.value = true })
 onBeforeUnmount(removeShoppingCart)
@@ -115,7 +116,7 @@ const incrementAtIndex = function (index: number) {
 }
 
 const cash = async function () {
-  await sendOrder('station', true)
+  await sendOrder('station', calculator.immediatelyFinishedMode)
   closeDialog()
 }
 </script>

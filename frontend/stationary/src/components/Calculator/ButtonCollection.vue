@@ -4,7 +4,7 @@
       <v-icon>mdi-cart-outline</v-icon>
       <span class="ml-2">Bestellung ansehen</span>
     </v-btn>
-    <v-btn outlined @click="sendOrder('station', true)">
+    <v-btn outlined @click="sendOrder('station', calculator.immediatelyFinishedMode)">
       <v-icon>mdi-currency-eur</v-icon>
       <span class="ml-2">Bestellung kassieren</span>
     </v-btn>
@@ -20,6 +20,7 @@ import OrderDialog from './OrderDialog.vue';
 const { api } = useFeathers()
 const { openShoppingCart } = useCalculatorStore()
 const { sendOrder } = useUtilityStore()
+const calculator = useCalculatorStore()
 const clearOrder = function () {
   let { data } = api.service('ordered-items').findInStore({ query: { __isTemp: true }, temps: true })
   data.forEach(entry => {

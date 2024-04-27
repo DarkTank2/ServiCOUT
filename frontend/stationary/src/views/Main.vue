@@ -17,6 +17,7 @@
 import Void from '@/components/svg/Void.vue'
 import OrderWrapper from '@/components/OrderWrapper.vue';
 const { api } = useFeathers()
+const { setStoredRoute } = useUtilityStore()
 const { fetchAllOrders, fetchAllOrderedItems, fetchAllBaseItems, fetchAllSizes, fetchAllFlavours, fetchAllItems } = useFetchUtility()
 fetchAllOrders({ finished: false })
 fetchAllOrderedItems({ open: { $gt: 0 } })
@@ -27,6 +28,10 @@ fetchAllSizes({})
 fetchAllFlavours({})
 fetchAllItems({})
 api.service('tenants').find({ query: { id: 2 } })
+
+onMounted(() => {
+    setStoredRoute({ name: 'Main' })
+})
 
 const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { finished: false } }))))
 </script>

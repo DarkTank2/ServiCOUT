@@ -10,6 +10,7 @@ import MixedWrapper from '@/components/Calculator/MixedWrapper.vue'
 const { api } = useFeathers()
 const calculator = useCalculatorStore()
 const fetch = useFetchUtility()
+const { setStoredRoute } = useUtilityStore()
 fetch.fetchAllBaseItems({})
 fetch.fetchAllCategories({})
 fetch.fetchAllFlavours({})
@@ -17,4 +18,8 @@ fetch.fetchAllItems({})
 fetch.fetchAllSizes({})
 fetch.fetchAllTables({})
 api.service('tenants').find({ query: { id: 2 } })
+
+onMounted(() => {
+    setStoredRoute({ name: 'Calculator' })
+})
 </script>

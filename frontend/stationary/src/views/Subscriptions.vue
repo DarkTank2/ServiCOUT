@@ -11,6 +11,10 @@
             <span>
                 Derzeit sind {{ usersetting.getSubscriptions.length }} Produkte ausgewählt!
             </span>
+            <br />
+            <span>
+                Wenn du fertig bist, kannst du <v-btn density="compact" variant="outlined" @click="routeBack">hier</v-btn> zu deiner Anwendung gelangen!
+            </span>
             <Category v-for="category in categories" :key="`single_category_${category.id}`" :id="category.id!" />
         </v-container>
     </v-card>
@@ -20,7 +24,14 @@ import Category from '@/components/Subscriptions/Category.vue';
 const { api } = useFeathers()
 const { fetchAllBaseItems, fetchAllCategories } = useFetchUtility()
 const usersetting = useUsersettings()
+const utilities = useUtilityStore()
+const router = useRouter()
 fetchAllBaseItems({})
 fetchAllCategories({})
 const { data: categories } = toRefs(api.service('categories').findInStore(computed(() => ({ query: {} }))))
+const routeBack = function () {
+    if (utilities.storedRoute) {
+        router.push(utilities.storedRoute)
+    }
+}
 </script>

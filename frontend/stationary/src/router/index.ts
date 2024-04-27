@@ -3,6 +3,8 @@ import { useUsersettings } from '@/store/usersettings-store'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { Component } from 'vue'
 
+import Onboarding from '@/views/Onboarding.vue'
+
 import Timer from '@/components/AppBar/Time.vue'
 import ShoppingCartSum from '@/components/Calculator/ShoppingCartSum.vue'
 import ConfigurationMenu from '@/components/Calculator/ConfigurationMenu.vue'
@@ -15,6 +17,11 @@ const routes = [
     redirect: () => {
       return { name: 'Main' }
     }
+  },
+  {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: Onboarding
   },
   {
     path: '/main',

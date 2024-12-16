@@ -35,10 +35,12 @@ export const tenant = (app: Application) => {
   app.service(tenantPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
         schemaHooks.resolveExternal(tenantExternalResolver),
         schemaHooks.resolveResult(tenantResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

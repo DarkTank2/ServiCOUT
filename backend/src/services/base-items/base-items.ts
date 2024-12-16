@@ -36,10 +36,13 @@ export const baseItems = (app: Application) => {
   app.service(baseItemsPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(baseItemsExternalResolver),
         schemaHooks.resolveResult(baseItemsResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

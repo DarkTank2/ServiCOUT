@@ -35,10 +35,13 @@ export const itemsHaveOptions = (app: Application) => {
   app.service(itemsHaveOptionsPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(itemsHaveOptionsExternalResolver),
         schemaHooks.resolveResult(itemsHaveOptionsResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

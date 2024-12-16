@@ -35,10 +35,12 @@ export const tables = (app: Application) => {
   app.service(tablesPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
         schemaHooks.resolveExternal(tablesExternalResolver),
         schemaHooks.resolveResult(tablesResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

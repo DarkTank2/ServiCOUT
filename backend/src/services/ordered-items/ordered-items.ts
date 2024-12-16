@@ -1,5 +1,5 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
-import { authenticate } from '@feathersjs/authentication'
+// import { authenticate } from '@feathersjs/authentication'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
 import { HookContext, NextFunction } from '../../declarations'
@@ -118,7 +118,7 @@ export const orderedItems = (app: Application) => {
   app.service(orderedItemsPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(orderedItemsExternalResolver),
         schemaHooks.resolveResult(orderedItemsResolver)
       ],

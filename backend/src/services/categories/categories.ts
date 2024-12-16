@@ -36,10 +36,13 @@ export const categories = (app: Application) => {
   app.service(categoriesPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(categoriesExternalResolver),
         schemaHooks.resolveResult(categoriesResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

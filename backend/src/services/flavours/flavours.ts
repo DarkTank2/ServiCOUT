@@ -35,10 +35,13 @@ export const flavours = (app: Application) => {
   app.service(flavoursPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(flavoursExternalResolver),
         schemaHooks.resolveResult(flavoursResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

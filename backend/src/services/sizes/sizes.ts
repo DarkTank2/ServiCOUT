@@ -35,10 +35,12 @@ export const sizes = (app: Application) => {
   app.service(sizesPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
         schemaHooks.resolveExternal(sizesExternalResolver),
         schemaHooks.resolveResult(sizesResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

@@ -35,10 +35,13 @@ export const option = (app: Application) => {
   app.service(optionPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(optionExternalResolver),
         schemaHooks.resolveResult(optionResolver)
-      ]
+      ],
+      create: [authenticate('jwt'),],
+      patch: [authenticate('jwt'),],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [

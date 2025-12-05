@@ -1,100 +1,35 @@
+/**
+ * router/index.ts
+ *
+ * Automatic routes for `./src/pages/*.vue`
+ */
+
 // Composables
-import { useUsersettings } from '@/store/usersettings-store'
-import { createRouter, createWebHistory } from 'vue-router'
-import type { Component } from 'vue'
+import { createRouter, createWebHistory, type _Awaitable, type NavigationGuardReturn } from 'vue-router'
+import { setupLayouts } from 'virtual:generated-layouts'
+import { routes } from 'vue-router/auto-routes'
 
-import ShoppingCart from '@/components/BottomComponents/ShoppingCart.vue'
-import OrderExtension from '@/components/AppBarExtensions/OrderExtension.vue'
-import CashExtension from '@/components/AppBarExtensions/CashExtension.vue'
-import CashComponent from '@/components/AppBarComponents/CashComponent.vue'
+export const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: setupLayouts(routes),
+})
 
-const routes = [
-  {
-    path: '/',
-    name: 'Base',
-    redirect: (_to: any) => {
-      let usersettings = useUsersettings()
-      if (usersettings.onboarded) {
-        return { name: 'Home' }
-      } else {
-        return { name: 'Onboarding' }
-      }
-    }
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    component: () => import('@/views/Home.vue')
-  },
-  {
-    path: '/onboarding',
-    name: 'Onboarding',
-    component: () => import('@/views/Onboarding.vue')
-  },
-  {
-    path: '/order',
-    name: 'Order',
-    component: () => import('@/views/Order.vue'),
-    meta: {
-      bottomComponent: ShoppingCart,
-      extension: OrderExtension,
-      transition: 'swipe-left'
-    },
-    beforeEnter: (_to: any, _from: any) => {
-      const usersettings = useUsersettings()
-      if (!usersettings.getName || !usersettings.getTableId) { // includes null and empty strings
-        return { name: 'EnterName' }
-      }
-      return true
-    }
-  },
-  {
-    path: '/enter-name',
-    name: 'EnterName',
-    component: () => import('@/views/NameInput.vue')
-  },
-  {
-    path: '/cash',
-    name: 'Cash',
-    component: () => import('@/views/Cash.vue'),
-    meta: {
-      transition: 'swipe-right',
-      extension: CashExtension,
-      appBarComponent: CashComponent
-    },
-    children: [
-      {
-        path: '',
-        name: 'Cash/AllTables',
-        component: () => import('@/components/Cash/AllTables.vue')
-      },
-      {
-        path: ':tableId',
-        name: 'Cash/SingleTable',
-        component: () => import('@/components/Cash/SingleTable.vue')
-      }
-    ]
-  }
-]
-
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    }else if (to.hash) {
-      return {
-        el: to.hash,
-        behavior: 'smooth',
-        top: to.meta.extension ? 132 : 84
-      }
+// Workaround for https://github.com/vitejs/vite/issues/11804
+router.onError((err, to) => {
+  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
+    if (localStorage.getItem('vuetify:dynamic-reload')) {
+      console.error('Dynamic import error, reloading page did not fix it', err)
     } else {
-      return { top: 0 }
+      console.log('Reloading page to fix dynamic import error')
+      localStorage.setItem('vuetify:dynamic-reload', 'true')
+      location.assign(to.fullPath)
     }
+  } else {
+    console.error(err)
   }
 })
-router.beforeEach(async (to, from) => {
+
+const handleAuthentication: () => _Awaitable<NavigationGuardReturn> = async function () {
   const authStore = useAuthStore()
   const { api } = useFeathers()
   const accessToken = await api.authentication.getAccessToken()
@@ -102,25 +37,61 @@ router.beforeEach(async (to, from) => {
     const isExpired = authStore.isTokenExpired(accessToken)
     if (!isExpired) {
       console.log('Accesstoken valid.')
+      await authStore.reAuthenticate()
       return true
     }
     console.log('Accesstoken expired...')
   }
 
   // always resolves. no need to catch
-  await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' })
-
+  let authenticationResult = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' }).then(() => true).catch(() => false)
+  if (!authenticationResult) {
+    return { path: '/error' }
+  }
+  await authStore.getPromise()
   return true
+}
+const ensureDataPresence: () => _Awaitable<NavigationGuardReturn> = async function () {
+  const { api } = useFeathers()
+  const authStore = useAuthStore()
+  let userId = authStore.userId!
+  let user = api.service('users').getFromStore(userId)
+  await api.service('tenants').get(user.value.tenantId!)
+}
+
+router.beforeEach(async (to, from) => {
+  if (to.meta.requiresAuth === false) {
+    return true
+  }
+  // the result is either true if the user is authenticated
+  // or the error-page if something went wrong whilst authenticating
+  let res = await handleAuthentication()
+  if (res !== true) {
+    return res
+  }
+  // at this point the user is authenticated, or at least re-authenticated
+  // thus the user is accessible from the auth-store and has a token available
+  await ensureDataPresence()
+  if (to.meta.requiresAuth === 'user') {
+    return true
+  }
+  // admin is required
+  const auth = useAuthStore()
+  if (auth.user?.value?.role?.name === 'admin' && auth.user?.value?.role?.id === 1) {
+    return true
+  }
+  return '/error'
 })
 
-export default router
+router.isReady().then(() => {
+  localStorage.removeItem('vuetify:dynamic-reload')
+})
 
 declare module 'vue-router' {
   interface RouteMeta {
-    extension?: Component,
-    titleReplacement?: Component,
-    appBarComponent?: Component,
-    bottomComponent?: Component,
-    transition?: string
+    // is optional
+    isAdmin?: boolean
+    // must be declared by every route
+    requiresAuth: 'admin' | 'user' | false
   }
 }

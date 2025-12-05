@@ -6,15 +6,17 @@
 
 // Plugins
 import vuetify from './vuetify'
-import pinia from '../store'
-import router from '../router'
+import pinia from '../stores'
+import { DataLoaderPlugin } from 'unplugin-vue-router/data-loaders'
+import { router } from '../router'
 
 // Types
 import type { App } from 'vue'
 
 export function registerPlugins (app: App) {
   app
-    .use(vuetify)
     .use(pinia)
+    .use(vuetify)
+    .use(DataLoaderPlugin, { router })
     .use(router)
 }

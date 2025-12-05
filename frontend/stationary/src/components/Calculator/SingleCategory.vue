@@ -28,11 +28,8 @@
         </v-col>
     </v-row>
 </template>
-
 <script setup lang="ts">
-import { GridLayout, Layout } from 'grid-layout-plus'
-import SingleBaseItem from './SingleBaseItem.vue';
-import SingleItem from './SingleItem.vue';
+import { GridLayout, type Layout } from 'grid-layout-plus'
 
 const { api } = useFeathers()
 const usersettings = useUsersettings()

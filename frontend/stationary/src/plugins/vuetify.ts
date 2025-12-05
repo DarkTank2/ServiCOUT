@@ -8,35 +8,41 @@
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
-import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { VFab } from 'vuetify/labs/VFab'
-
 // Composables
 import { createVuetify } from 'vuetify'
+import { VBtn } from 'vuetify/components'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
-  components: {
-    VTimePicker,
-    VFab,
-  },
   theme: {
-    defaultTheme: 'dark',
-    themes: {
-      light: {
-        colors: {
-          primary: '#1867C0',
-          secondary: '#5CBBF6',
-        },
-      },
-    },
+    defaultTheme: 'system',
+  },
+  aliases: {
+    PrimaryButton: VBtn,
+    SecondaryButton: VBtn
   },
   defaults: {
-    VAlert: {
-      variant: 'outlined'
+    VTextField: {
+      variant: 'outlined',
+      hideDetails: true
+    },
+    VSelect: {
+      variant: 'outlined',
+      hideDetails: true
+    },
+    VSwitch: {
+      hideDetails: true
     },
     VTooltip: {
       maxWidth: 500
+    },
+    PrimaryButton: {
+      variant: 'outlined',
+      color: 'primary'
+    },
+    SecondaryButton: {
+      variant: 'solo',
+      color: 'primary'
     }
   }
 })

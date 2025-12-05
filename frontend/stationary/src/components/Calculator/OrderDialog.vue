@@ -105,6 +105,9 @@ const closeDialog = function () {
 }
 const decrementAtIndex = function (index: number) {
     let orderedItem = allTempOrderedItems.value[index]
+    if (!orderedItem) {
+      return
+    }
     orderedItem.quantity! -= 1
     if (orderedItem.quantity! <= 0) {
         orderedItem.removeFromStore()
@@ -112,6 +115,9 @@ const decrementAtIndex = function (index: number) {
 }
 const incrementAtIndex = function (index: number) {
     let orderedItem = allTempOrderedItems.value[index]
+    if (!orderedItem) {
+      return
+    }
     orderedItem.quantity! += 1
 }
 

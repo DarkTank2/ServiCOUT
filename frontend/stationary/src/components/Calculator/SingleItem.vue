@@ -10,7 +10,7 @@
     </v-card>
 </template>
 <script setup lang="ts">
-import { CSSProperties } from 'vue';
+import { type CSSProperties } from 'vue';
 import colors from 'vuetify/util/colors'
 
 const { api } = useFeathers()
@@ -20,11 +20,18 @@ const calculator = useCalculatorStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
-    itemId: number,
+    itemId: number | string,
     style?: CSSProperties,
     disabled?: boolean
 }>()
-const item = api.service('items').getFromStore(toRef(props.itemId))
+const itemId = computed(() => {
+    if (typeof props.itemId === 'string') {
+        return Number.parseInt(props.itemId)
+    } else {
+        return props.itemId
+    }
+})
+const item = api.service('items').getFromStore(itemId)
 const baseItem = api.service('base-items').getFromStore(computed(() => item.value.baseItemId!))
 const category = api.service('categories').getFromStore(computed(() => baseItem.value.categoryId!))
 const size = api.service('sizes').getFromStore(computed(() => item.value.sizeId!))
@@ -64,7 +71,7 @@ const addToOrder = function () {
     // ref needed otherwise __isTemp property cannot be queried
     let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
         query: {
-            itemId: props.itemId,
+            itemId: itemId.value,
             tenantId: auth.user.tenantId as number,
             __isTemp: true
         },
@@ -76,7 +83,7 @@ const addToOrder = function () {
         clone.commit()
     } else {
         api.service('ordered-items').createInStore({
-            itemId: props.itemId,
+            itemId: itemId.value,
             quantity: 1,
             tenantId: auth.user.tenantId as number,
             orderId: 0, // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized

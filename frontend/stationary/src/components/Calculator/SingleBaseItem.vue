@@ -79,7 +79,7 @@
     </v-dialog>
 </template>
 <script setup lang="ts">
-import { CSSProperties } from 'vue';
+import { type CSSProperties } from 'vue';
 import colors from 'vuetify/util/colors'
 
 const { api } = useFeathers()
@@ -89,7 +89,7 @@ const calculator = useCalculatorStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
-    baseItemId: number,
+    baseItemId: number | string,
     style?: CSSProperties,
     disabled?: boolean
 }>()
@@ -101,7 +101,20 @@ const flavourId = ref<number | null>(null)
 const baseItem = api.service('base-items').getFromStore(toRef(props.baseItemId))
 const category = api.service('categories').getFromStore(computed(() => baseItem.value.categoryId!))
 
-const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: props.baseItemId } }))))
+const itemsQuery = computed(() => {
+    let baseItemId: number
+    if (typeof props.baseItemId === 'string') {
+        baseItemId = Number.parseInt(props.baseItemId)
+    } else {
+        baseItemId = props.baseItemId
+    }
+    return {
+        query: {
+            baseItemId
+        }
+    }
+})
+const { data: items } = toRefs(api.service('items').findInStore(itemsQuery))
 let sizesQuery = computed(() => ({
     query: { id: { $in: items.value.map(({ sizeId }) => sizeId!) } }
 }))

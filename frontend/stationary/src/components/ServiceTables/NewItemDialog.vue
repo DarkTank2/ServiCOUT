@@ -34,18 +34,18 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="text" @click="close">
+                <secondary-button @click="close">
                     Abbrechen
-                </v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="save">
+                </secondary-button>
+                <primary-button @click="save">
                     Erstellen
-                </v-btn>
+                </primary-button>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 <script setup lang="ts">
-import { ServiceTypes } from 'backend';
+import type { ServiceTypes } from 'backend';
 const { api } = useFeathers()
 interface I {
     value: string,
@@ -71,15 +71,28 @@ const rules = {
     required: (value: any) => !!value || 'Notwendig!'
 }
 const init = function () {
-    model.value = { ...JSON.parse(JSON.stringify(props.defaultConfig || {})) }
+    model.value = { ...structuredClone(props.defaultConfig || {}) }
 }
 const close = function () {
     dialog.value = false
     setTimeout(() => { init(); resetError() }, 500)
 }
+const sanitizeObject = function (obj: any) {
+    let data: any = {}
+    for (let key of Object.keys(obj)) {
+        let header = props.headers.find(header => header.value === key)
+        if (!header) continue
+        if (header.type === 'number') {
+            data[key] = Number.parseFloat(obj[key])
+        } else {
+            data[key] = obj[key]
+        }
+    }
+    return data
+}
 const save = async function () {
     loading.value = true
-    let data = api.service(props.serviceName).createInStore(model)
+    let data = api.service(props.serviceName).createInStore(sanitizeObject(model.value))
     console.log(data)
     await data.save().catch((err: Error) => {
         errorState.value = true

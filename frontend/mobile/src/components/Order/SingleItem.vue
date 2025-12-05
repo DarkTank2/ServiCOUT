@@ -83,12 +83,13 @@
     </v-dialog>
 </template>
 <script setup lang="ts">
-import { CSSProperties } from 'vue';
+import type { CSSProperties } from 'vue';
 import colors from 'vuetify/util/colors'
 
 const { api } = useFeathers()
-const usersettings = useUsersettings()
-const auth = useAuthStore()
+const settings = useSettings()
+const mobileSettings = useMobileSettings()
+// const auth = useAuthStore()
 // const utilities = useUtilityStore()
 
 const props = defineProps<{
@@ -168,9 +169,9 @@ const addToOrder = function () {
     let alreadyFoundItem = api.service('ordered-items').findInStore(ref({
         query: {
             itemId: selectedItem.value?.id!,
-            waiter: usersettings.getName!,
-            tableId: usersettings.getTableId!,
-            tenantId: auth.user.tenantId as number,
+            waiter: settings.getName!,
+            tableId: mobileSettings.getTableId!,
+            tenantId: api.service('tenants').findInStore({}).data[0]!.id!,
             __isTemp: true
         },
         temps: true
@@ -186,7 +187,7 @@ const addToOrder = function () {
         api.service('ordered-items').createInStore({
             itemId: selectedItem.value?.id!,
             quantity: amount.value,
-            tenantId: auth.user.tenantId as number,
+            tenantId: api.service('tenants').findInStore({}).data[0]!.id!,
             comment: comment.value,
             orderId: 0, // use 0 as orderId as there is not yet a valid order, the order is created when the order is finalized
             open: amount.value,

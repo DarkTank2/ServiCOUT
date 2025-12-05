@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import moment from 'moment';
 
-const emit = defineEmits<{ (e: 'save'): void }>()
+const emit = defineEmits<(e: 'save') => void>()
 
 const { api } = useFeathers()
 

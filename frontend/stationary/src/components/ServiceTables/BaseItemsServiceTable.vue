@@ -12,7 +12,7 @@
                         :default-config="{ available: true }" :optional="['description']">
                         <template #button>
                             <v-icon icon="mdi-plus"></v-icon>
-                            <span>Neues Produkt anlegen</span>
+                            <span>Neues Basis-Produkt anlegen</span>
                         </template>
                         <template #dialog-title>Erstelle ein neues Basis-Produkt</template>
                     </new-item-dialog>
@@ -20,7 +20,7 @@
                     <v-spacer></v-spacer>
 
                     <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact" label="Search"
-                        single-line flat hide-details variant="solo-filled"></v-text-field>
+                        single-line flat hide-details variant="solo-filled" class="mr-3"></v-text-field>
                 </v-toolbar>
             </template>
             <template v-for="header in headers" #[`item.${header.value}`]="{ item }">
@@ -43,9 +43,7 @@
     </v-card>
 </template>
 <script setup lang="ts">
-import NewItemDialog from './NewItemDialog.vue';
-import { ServiceTypes } from 'backend';
-import { BaseItemsData } from 'backend';
+import type { ServiceTypes, BaseItemsData } from 'backend';
 type DataType = BaseItemsData
 const serviceName: keyof ServiceTypes = 'base-items'
 
@@ -152,6 +150,6 @@ const clearError = function (itemId: number) {
     }
 }
 const remove = function (item: any) {
-
+    console.log('Not implemented')
 }
 </script>

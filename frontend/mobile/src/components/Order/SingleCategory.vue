@@ -4,7 +4,6 @@
             <v-card v-if="category" style="border: thin solid;" class="rounded-pill" :id="`category_${props.categoryId}`">
                 <v-card-text class="text-center">
                     {{ category.name }}
-                    <!-- <span v-if="disabled">( Deaktiviert )</span> -->
                 </v-card-text>
             </v-card>
             <v-skeleton-loader v-else type="heading"></v-skeleton-loader>
@@ -23,7 +22,6 @@
     </v-row>
 </template>
 <script setup lang="ts">
-import SingleItem from './SingleItem.vue';
 import colors from 'vuetify/util/colors'
 import type { CSSProperties } from 'vue';
 

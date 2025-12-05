@@ -20,7 +20,7 @@
                     <v-spacer></v-spacer>
 
                     <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact" label="Search"
-                        single-line flat hide-details variant="solo-filled"></v-text-field>
+                        single-line flat hide-details variant="solo-filled" class="mr-3"></v-text-field>
                 </v-toolbar>
             </template>
             <template v-for="header in headers" #[`item.${header.value}`]="{ item }">
@@ -29,7 +29,7 @@
                 <v-text-field v-if="header.type === 'number'" :type="'number'" v-model="item[header.value]"
                     :readonly="header.readonly" :density="'compact'" @update:model-value="save(item)" />
                 <v-switch v-if="header.type === 'boolean'" v-model="item[header.value]" :readonly="header.readonly"
-                    :density="'compact'" @update:model-value="save(item)" />
+                    :density="'compact'" @update:model-value="save(item)" color="primary" />
                 <v-select v-if="header.type === 'select'" :items="header.selectFrom" v-model="item[header.value]"
                     item-value="id" item-title="name" :density="'compact'" @update:model-value="save(item)" />
             </template>
@@ -43,9 +43,11 @@
     </v-card>
 </template>
 <script setup lang="ts">
-import NewItemDialog from './NewItemDialog.vue';
-import { ServiceTypes } from 'backend';
-import { SizesData } from 'backend';
+// What is to change?
+// serviceName
+// headers
+// markup: spans with name of service
+import type { ServiceTypes, SizesData } from 'backend';
 type DataType = SizesData
 const serviceName: keyof ServiceTypes = 'sizes'
 
@@ -130,6 +132,6 @@ const clearError = function (itemId: number) {
     }
 }
 const remove = function (item: any) {
-
+    console.log('Not implemented')
 }
 </script>

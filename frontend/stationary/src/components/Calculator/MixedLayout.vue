@@ -20,7 +20,7 @@
     </v-row>
 </template>
 <script setup lang="ts">
-import { GridLayout, Layout } from 'grid-layout-plus'
+import { GridLayout, type Layout } from 'grid-layout-plus'
 import SingleBaseItem from './SingleBaseItem.vue';
 import SingleItem from './SingleItem.vue';
 

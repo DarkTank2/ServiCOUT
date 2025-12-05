@@ -1,7 +1,6 @@
-import { Service } from "@feathersjs/feathers"
-import { BaseItemsQuery, FlavoursQuery, ItemsHaveOptionsQuery, ItemsQuery, OptionQuery, OrderedItemHasOptionQuery, OrderedItemsQuery, OrdersQuery, RolesQuery, ServiceTypes, SizesQuery, TablesQuery, TenantQuery, UserQuery } from "backend"
-import { CategoriesQuery } from "backend/lib/services/categories/categories.class"
-import { SvcParams } from "feathers-pinia/dist/create-pinia-service"
+import { type Service } from "@feathersjs/feathers"
+import type { BaseItemsQuery, FlavoursQuery, ItemsHaveOptionsQuery, ItemsQuery, OptionQuery, OrderedItemHasOptionQuery, OrderedItemsQuery, OrdersQuery, RolesQuery, ServiceTypes, SizesQuery, TablesQuery, TenantQuery, UserQuery } from "backend"
+import type { CategoriesQuery } from "backend/lib/services/categories/categories.class"
 
 const { api } = useFeathers()
 
@@ -168,19 +167,19 @@ export const fetchAllUsers = async function (query: UserQuery, _skip?: number) {
     })
 }
 
-export const fetchAll = function () {
-    fetchAllBaseItems({})
-    fetchAllCategories({})
-    fetchAllFlavours({})
-    fetchAllItemOptionMaps({})
-    fetchAllItems({})
-    fetchAllOrderedItems({})
-    fetchAllOrderedItemsOptionMaps({})
-    fetchAllOrders({})
-    fetchAllRoles({})
-    fetchAllSizes({})
-    fetchAllTables({})
-    fetchAllTenants({})
-    fetchAllUsers({})
-    fetchAllOptions({})
+export const fetchAll = async function () {
+    await fetchAllBaseItems({})
+    await fetchAllCategories({})
+    await fetchAllFlavours({})
+    await fetchAllItemOptionMaps({})
+    await fetchAllItems({})
+    await fetchAllOrderedItems({})
+    await fetchAllOrderedItemsOptionMaps({})
+    await fetchAllOrders({})
+    await fetchAllRoles({})
+    await fetchAllSizes({})
+    await fetchAllTables({})
+    await fetchAllTenants({})
+    await fetchAllUsers({})
+    await fetchAllOptions({})
 }

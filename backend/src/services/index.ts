@@ -11,7 +11,7 @@ import { items } from './items/items'
 import { flavours } from './flavours/flavours'
 import { sizes } from './sizes/sizes'
 import { baseItems } from './base-items/base-items'
-import { user } from './users/users'
+import { users } from './users/users'
 // For more information about this file see https://dove.feathersjs.com/guides/cli/application.html#configure-functions
 import type { Application } from '../declarations'
 
@@ -29,6 +29,6 @@ export const services = (app: Application) => {
   app.configure(flavours)
   app.configure(sizes)
   app.configure(baseItems)
-  app.configure(user)
+  app.configure(users)
   // All services will be registered here
 }

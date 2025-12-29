@@ -35,7 +35,7 @@ const item = api.service('items').getFromStore(itemId)
 const baseItem = api.service('base-items').getFromStore(computed(() => item.value.baseItemId!))
 const category = api.service('categories').getFromStore(computed(() => baseItem.value.categoryId!))
 const size = api.service('sizes').getFromStore(computed(() => item.value.sizeId!))
-const flavour = api.service('base-items').getFromStore(computed(() => item.value.flavourId!))
+const flavour = api.service('flavours').getFromStore(computed(() => item.value.flavourId!))
 
 const style = computed(() => {
     let _style: CSSProperties = {}

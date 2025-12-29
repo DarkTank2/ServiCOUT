@@ -12,7 +12,7 @@
         <router-view name="AppBarExtension"/>
       </template>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" temporary>
+    <v-navigation-drawer v-model="drawer" temporary nav>
       <v-list density="compact" lines="three" color="primary">
         <v-list-item title="ServiCOUT" subtitle="Verfügbare stationäre Apps"></v-list-item>
         <v-divider></v-divider>
@@ -58,6 +58,7 @@ const navElements = computed<Array<NavigationListItemProps>>(() => {
     // { to: { name: 'base' }, title: "Verlauf", subtitle: "Verlauf von verkauften Produkten dieser Station", icon: "mdi-history" },
     { to: { name: '/keybindings' }, title: "Tastenkombinationen", subtitle: "Hinzufügen eines Produktes mittels Tastendruck konfigurieren", icon: "mdi-keyboard-outline" },
     { to: { name: '/config' }, title: "Konfiguration", subtitle: "Nur für Administratoren!", icon: "mdi-cog" },
+    { to: { path: '/data-exchange/' }, title: 'Import-Export', subtitle: 'Datenaustausch in/aus CSV-Formaten', icon: 'mdi-database-sync' }
   ]
 })
 </script>

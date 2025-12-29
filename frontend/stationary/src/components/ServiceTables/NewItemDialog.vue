@@ -22,6 +22,8 @@
                             <v-switch v-if="header.type === 'boolean'" v-model="model[header.value]" :density="'compact'"
                                 color="primary" :label="header.title"
                                 :rules="props.optional?.includes(header.value) ? [] : [rules.required]" />
+                            <v-color-input v-if="header.type === 'color'" v-model="model[header.value]" density="compact"
+                                variant="outlined" hide-details mode="rgb" color-pip />
                             <v-select v-if="header.type === 'select'" :items="header.selectFrom"
                                 v-model="model[header.value]" item-value="id" item-title="name" :density="'compact'"
                                 :label="header.title"
@@ -51,7 +53,7 @@ interface I {
     value: string,
     readonly?: boolean,
     title?: string,
-    type: 'string' | 'number' | 'boolean' | 'select',
+    type: 'string' | 'number' | 'boolean' | 'select' | 'color',
     selectFrom?: Array<any>,
     width?: string
 }

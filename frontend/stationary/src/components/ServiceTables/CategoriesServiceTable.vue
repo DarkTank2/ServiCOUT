@@ -33,6 +33,8 @@
                     :density="'compact'" @update:model-value="save(item)" color="primary"/>
                 <v-select v-if="header.type === 'select'" :items="header.selectFrom" v-model="item[header.value]"
                     item-value="id" item-title="name" :density="'compact'" @update:model-value="save(item)" />
+                <v-color-input v-if="header.type === 'color'" v-model="item[header.value]" density="compact"
+                    variant="outlined" hide-details mode="rgb" @update:model-value="save(item)" color-pip />
             </template>
             <template #[`item.action`]="{ item }">
                 <v-progress-circular v-if="loadingStore[item.id]" indeterminate></v-progress-circular>
@@ -70,7 +72,7 @@ interface I {
     value: 'id' | keyof DataType,
     readonly?: boolean,
     title?: string,
-    type: 'string' | 'number' | 'boolean' | 'select',
+    type: 'string' | 'number' | 'boolean' | 'select' | 'color',
     selectFrom?: Array<any>,
     width?: string
 }
@@ -104,7 +106,7 @@ const headers = computed(() => {
     }, {
         value: 'color',
         title: '#Farbe',
-        type: 'string'
+        type: 'color'
     }, {
         value: 'active',
         title: 'Aktiv?',

@@ -11,9 +11,13 @@ import 'vuetify/styles'
 // Composables
 import { createVuetify } from 'vuetify'
 import { VBtn } from 'vuetify/components'
+import { VColorInput } from 'vuetify/labs/VColorInput'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  components: {
+    VColorInput,
+  },
   theme: {
     defaultTheme: 'system',
   },

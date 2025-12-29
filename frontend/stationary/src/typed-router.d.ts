@@ -21,6 +21,10 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/(calculator)/calculator': RouteRecordInfo<'/(calculator)/calculator', '/calculator', Record<never, never>, Record<never, never>>,
     '/config': RouteRecordInfo<'/config', '/config', Record<never, never>, Record<never, never>>,
+    '/data-exchange': RouteRecordInfo<'/data-exchange', '/data-exchange', Record<never, never>, Record<never, never>, '/DataExchange/export' | '/DataExchange/import' | '/data-exchange/'>,
+    '/data-exchange/': RouteRecordInfo<'/data-exchange/', '/data-exchange', Record<never, never>, Record<never, never>>,
+    '/DataExchange/export': RouteRecordInfo<'/DataExchange/export', '/data-exchange/export', Record<never, never>, Record<never, never>>,
+    '/DataExchange/import': RouteRecordInfo<'/DataExchange/import', '/data-exchange/import', Record<never, never>, Record<never, never>>,
     '/error': RouteRecordInfo<'/error', '/error', Record<never, never>, Record<never, never>>,
     '/item-manager': RouteRecordInfo<'/item-manager', '/item-manager', Record<never, never>, Record<never, never>>,
     '/keybindings': RouteRecordInfo<'/keybindings', '/keybindings', Record<never, never>, Record<never, never>>,
@@ -63,6 +67,26 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/config.vue': {
       routes: '/config'
+      views: never
+    }
+    'src/pages/config@AppBarComponent.vue': {
+      routes: '/config'
+      views: never
+    }
+    'src/pages/DataExchange.vue': {
+      routes: '/data-exchange' | '/data-exchange/' | '/DataExchange/export' | '/DataExchange/import'
+      views: 'default'
+    }
+    'src/pages/DataExchange/index.vue': {
+      routes: '/data-exchange/'
+      views: never
+    }
+    'src/pages/DataExchange/export.vue': {
+      routes: '/DataExchange/export'
+      views: never
+    }
+    'src/pages/DataExchange/import.vue': {
+      routes: '/DataExchange/import'
       views: never
     }
     'src/pages/error.vue': {

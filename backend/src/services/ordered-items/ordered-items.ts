@@ -20,6 +20,8 @@ import { OrderedItemsService, getOptions } from './ordered-items.class'
 import { orderedItemsPath, orderedItemsMethods } from './ordered-items.shared'
 import { logUser } from '../../hooks/log-user'
 import { logger } from '../../logger'
+import { authenticate } from '@feathersjs/authentication'
+import { allowUserRole } from '../../hooks/allow-user-role'
 
 export * from './ordered-items.class'
 export * from './ordered-items.schema'
@@ -56,7 +58,6 @@ async function updateOrder(context: HookContext, next: NextFunction) {
     // all ordered items for this order except the one to be patched in this call
     const allOtherOrderedItems = orderedItems.filter(({ id }) => id !== original.id)
     const allFinished = allOtherOrderedItems.every(({ open }) => open === 0) && (data.open === 0)
-    console.log(allFinished)
     try {
       await next()
       if (allFinished && order.finished !== true) {
@@ -124,7 +125,8 @@ export const orderedItems = (app: Application) => {
       ],
       create: [createOrder],
       update: [updateOrder],
-      patch: [updateOrder]
+      patch: [updateOrder],
+      remove: [authenticate('jwt'),]
     },
     before: {
       all: [
@@ -142,7 +144,9 @@ export const orderedItems = (app: Application) => {
         schemaHooks.validateData(orderedItemsPatchValidator),
         schemaHooks.resolveData(orderedItemsPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []

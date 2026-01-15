@@ -1,5 +1,5 @@
 <template>
-    <v-card height="100%">
+    <v-card>
         <v-container>
             <SingleCategory v-if="categories.length === 0" :category-id="0" />
             <SingleCategory v-if="categories.length === 0" :category-id="0" />

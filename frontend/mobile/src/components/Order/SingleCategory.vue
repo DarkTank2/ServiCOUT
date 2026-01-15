@@ -1,5 +1,5 @@
 <template>
-    <v-row style="padding: 20px;">
+    <v-row style="padding: 20px;" :id="`category_${props.categoryId}`">
         <v-col cols="12" style="text-align: center;">
             <v-card v-if="category" style="border: thin solid;" class="rounded-pill" :id="`category_${props.categoryId}`">
                 <v-card-text class="text-center">

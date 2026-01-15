@@ -2,7 +2,7 @@
   <AppBar />
 
   <!-- if the padding is not added, dialogues of all kind will move the content farther down -->
-  <v-main :style="{ 'padding-top': showExtension ? '112px' : '64px' }">
+  <v-main :style="{ 'padding-top': showExtension ? '112px' : '64px' }" id="main">
     <router-view />
   </v-main>
 

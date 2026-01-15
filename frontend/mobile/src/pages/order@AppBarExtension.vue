@@ -12,11 +12,12 @@
     </v-slide-group>
 </template>
 <script setup lang="ts">
+import { useGoTo } from 'vuetify'
+
 const { api } = useFeathers()
-const router = useRouter()
-const route = useRoute()
+const goTo = useGoTo()
 const { data: categories } = toRefs(api.service('categories').findInStore(ref({ query: {  } })))
 const scrollToCategory = function (categoryId: number) {
-    router.push({ name: route.name!, hash: `#category_${categoryId}` })
+    goTo(`#category_${categoryId}`, { offset: -112 })
 }
 </script>

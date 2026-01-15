@@ -26,6 +26,7 @@ declare module 'vue-router/auto-routes' {
     '/DataExchange/export': RouteRecordInfo<'/DataExchange/export', '/data-exchange/export', Record<never, never>, Record<never, never>>,
     '/DataExchange/import': RouteRecordInfo<'/DataExchange/import', '/data-exchange/import', Record<never, never>, Record<never, never>>,
     '/error': RouteRecordInfo<'/error', '/error', Record<never, never>, Record<never, never>>,
+    '/history': RouteRecordInfo<'/history', '/history', Record<never, never>, Record<never, never>>,
     '/item-manager': RouteRecordInfo<'/item-manager', '/item-manager', Record<never, never>, Record<never, never>>,
     '/keybindings': RouteRecordInfo<'/keybindings', '/keybindings', Record<never, never>, Record<never, never>>,
     '/main': RouteRecordInfo<'/main', '/main', Record<never, never>, Record<never, never>>,
@@ -91,6 +92,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/error.vue': {
       routes: '/error'
+      views: never
+    }
+    'src/pages/history.vue': {
+      routes: '/history'
       views: never
     }
     'src/pages/ItemManager.vue': {

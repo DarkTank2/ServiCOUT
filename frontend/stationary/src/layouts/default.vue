@@ -55,7 +55,7 @@ const navElements = computed<Array<NavigationListItemProps>>(() => {
     { to: { name: '/subscriptions' }, title: "Abonnements", subtitle: "Einstellung, welche Produkte angezeigt werden", icon: "mdi-tag-check-outline" },
     { to: { name: '/item-manager' }, title: "Item-Manager", subtitle: "Deaktivieren von leeren Produkten", icon: "mdi-tag-off-outline" },
     { to: { name: '/statistics' }, title: "Statistiken", subtitle: "Zeitlicher Verlauf von einem oder mehreren Produkten", icon: "mdi-chart-line" },
-    // { to: { name: 'base' }, title: "Verlauf", subtitle: "Verlauf von verkauften Produkten dieser Station", icon: "mdi-history" },
+    { to: { name: '/history' }, title: "Verlauf", subtitle: "Verlauf von verkauften Produkten dieser Station", icon: "mdi-history" },
     { to: { name: '/keybindings' }, title: "Tastenkombinationen", subtitle: "Hinzufügen eines Produktes mittels Tastendruck konfigurieren", icon: "mdi-keyboard-outline" },
     { to: { name: '/config' }, title: "Konfiguration", subtitle: "Nur für Administratoren!", icon: "mdi-cog" },
     { to: { path: '/data-exchange/' }, title: 'Import-Export', subtitle: 'Datenaustausch in/aus CSV-Formaten', icon: 'mdi-database-sync' }

@@ -68,6 +68,22 @@ export const useUsersettings = defineStore('usersettings', () => {
         shortenDisplayName.value = val
     }
 
+    const getDisplayName = function (sizeName: string | undefined, baseItemName: string | undefined, flavourName: string | undefined) {
+        if (!sizeName) {
+            sizeName = ''
+        }
+        if (['-'].includes(sizeName) && shortenDisplayName.value) {
+            sizeName = ''
+        }
+        if (!flavourName) {
+            flavourName = ''
+        }
+        if (['-', undefined].includes(flavourName) && shortenDisplayName.value) {
+            flavourName = ''
+        }
+        return `${sizeName} ${baseItemName} ${flavourName}`.trim()
+    }
+
     return {
         name,
         onboarded,
@@ -78,6 +94,7 @@ export const useUsersettings = defineStore('usersettings', () => {
         subscriptions,
         getSubscriptions,
         updateSubscriptions,
-        toggleSubscribedCategory
+        toggleSubscribedCategory,
+        getDisplayName
     }
 })

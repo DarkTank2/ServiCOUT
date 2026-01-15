@@ -1,5 +1,6 @@
 <template>
-    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}`, display: 'flex', flexDirection: 'column' }" :height="cardHeight">
+    <!-- <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}`, display: 'flex', flexDirection: 'column' }" :height="cardHeight"> -->
+    <v-card @click.stop="claimOrder" :style="{ border: `thin solid ${claim === true ? 'red' : 'transparent'}`, display: 'flex', flexDirection: 'column' }">
         <v-card-title>
             <span :class="{ 'text-error': claim, 'text-success': !claim }">
                 {{ title }}

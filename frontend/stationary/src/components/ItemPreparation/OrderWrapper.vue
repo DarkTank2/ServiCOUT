@@ -32,31 +32,37 @@ const listPadding = 8 + 8 // padding for list element top and bottom
 const listElements = [
     104, // list element wihtout comment, just item-name, size and flavour
     168, // list element with one line of comment
-    208 // list element with very long comment, comment is over two lines
+    207.8, // list element with very long comment, comment is over two lines
+    143.85, // no comment but broken subtitle, long flavour and size
 ]
-const commentBreakpoints = 20 // the exact breakpoint for the comment cannot be determined easily since it is not a monospace font
+const lineBreakpoint = 20 // the exact breakpoint for the comment cannot be determined easily since it is not a monospace font
 const size = computed(() => {
     let orderedItemsHeights: Array<number> = orderedItems.value.map(orderedItem => {
-            if (orderedItem.comment === undefined || orderedItem.comment === '') {
-                return listElements[0] as number
-            } else if (orderedItem.comment?.length > commentBreakpoints) {
-                return listElements[2] as number
-            } else {
-                return listElements[1] as number
-            }
+        let item = api.service('items').getFromStore(orderedItem.itemId!)
+        let size = api.service('sizes').getFromStore(item.value.sizeId!)
+        let flavour = api.service('flavours').getFromStore(item.value.flavourId!)
+        let extendedItemBroken = `${flavour?.value.name} | ${size?.value.name}`.length > lineBreakpoint
+        if (extendedItemBroken) {
+            return listElements[3] as number
+        }
+        if (!orderedItem.comment || orderedItem.comment === '') {
+            return listElements[0] as number
+        }
+        let commentBroken = orderedItem.comment?.length > lineBreakpoint
+
+        if (commentBroken) {
+            return listElements[2] as number
+        } else {
+            return listElements[1] as number
+        }
     })
     let calculatedHeight = titleHeight
         + (cardTextPadding + rowMargin + listPadding)
-        + orderedItemsHeights.reduce((acc, val) => {
-            if (!acc || !val) {
-                return 0
-            }
-            return acc + val
-        }, 0)
+        + orderedItemsHeights.reduce((acc, val) => acc + val, 0)
         + buttonHeight
     // console.log(`Order: ${order.value.id}: calculated height = ${calculatedHeight}`)
     if ((windowSize.height.value - appBarHeight - containerPadding) < calculatedHeight) {
-        if ((windowSize.height.value - appBarHeight - containerPadding) < calculatedHeight/2) {
+        if ((windowSize.height.value - appBarHeight - containerPadding) < calculatedHeight / 2) {
             return 12
         }
         return 8

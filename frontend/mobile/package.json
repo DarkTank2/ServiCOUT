@@ -17,7 +17,7 @@
     "@feathersjs/rest-client": "^5.0.37",
     "@fontsource/roboto": "5.2.7",
     "@mdi/font": "7.4.47",
-    "backend": "file:../../backend/public/backend-0.0.8.tgz",
+    "backend": "file:../../backend/public/backend-1.0.0.tgz",
     "feathers-pinia": "^4.5.4",
     "moment": "^2.30.1",
     "vue": "^3.5.21",

@@ -5,12 +5,12 @@
  */
 
 // Composables
-import { createRouter, createWebHistory, type _Awaitable, type NavigationGuardReturn } from 'vue-router'
+import { createRouter, createWebHashHistory, type _Awaitable, type NavigationGuardReturn } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 
 export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
 })
 
@@ -44,7 +44,7 @@ const handleAuthentication: () => _Awaitable<NavigationGuardReturn> = async func
   }
 
   // always resolves. no need to catch
-  let authenticationResult = await authStore.authenticate({ strategy: 'local', email: 'email', password: 'password' }).then(() => true).catch(() => false)
+  let authenticationResult = await authStore.authenticate({ strategy: 'local', email: 'user', password: 'password' }).then(() => true).catch(() => false)
   if (!authenticationResult) {
     return { path: '/error' }
   }

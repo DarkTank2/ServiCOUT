@@ -4,12 +4,6 @@
             <SingleCategory v-if="categories.length === 0" :category-id="0" />
             <SingleCategory v-if="categories.length === 0" :category-id="0" />
             <SingleCategory v-else v-for="category in categories" :key="`single_category_${category.id}`" :category-id="category.id!"></SingleCategory>
-            <SingleCategory :category-id="0" />
-            <SingleCategory :category-id="0" />
-            <SingleCategory :category-id="0" />
-            <SingleCategory :category-id="0" />
-            <SingleCategory :category-id="0" />
-            <SingleCategory :category-id="0" />
         </v-container>
         <v-fab app location="bottom right" size="large" icon @click="shoppingCartModel = true" style="bottom: 60px;">
             <v-icon icon="mdi-cart"></v-icon>

@@ -53,7 +53,7 @@ const { setNotification, setFetchPending, resetFetchPending } = useUtilityStore(
 const utilities = useUtilityStore()
 
 const tableId = computed(() => {
-    return Number.parseInt('1')
+    return Number.parseInt((route.params as { tableId: string }).tableId)
 })
 const table = api.service('tables').getFromStore(tableId)
 const { data: orders } = toRefs(api.service('orders').findInStore(computed(() => ({ query: { tableId: tableId.value, finished: true } }))))

@@ -165,7 +165,6 @@ declare module 'vue' {
     readonly useAuth: UnwrapRef<typeof import('feathers-pinia')['useAuth']>
     readonly useAuthStore: UnwrapRef<typeof import('./stores/auth')['useAuthStore']>
     readonly useBackup: UnwrapRef<typeof import('feathers-pinia')['useBackup']>
-    readonly useCalculatorStore: UnwrapRef<typeof import('./stores/calculator-store')['useCalculatorStore']>
     readonly useCashStore: UnwrapRef<typeof import('./stores/cash-store')['useCashStore']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
@@ -182,7 +181,6 @@ declare module 'vue' {
     readonly useServiceInstance: UnwrapRef<typeof import('feathers-pinia')['useServiceInstance']>
     readonly useSettings: UnwrapRef<typeof import('./stores/settings-store')['useSettings']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
-    readonly useStationarySettings: UnwrapRef<typeof import('./stores/stationary-settings-store')['useStationarySettings']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useUtilityStore: UnwrapRef<typeof import('./stores/utility-store')['useUtilityStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>

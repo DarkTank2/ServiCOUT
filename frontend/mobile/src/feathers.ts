@@ -4,7 +4,7 @@ import { createClient } from 'backend'
 import pinia from './stores/index'
 import rest from '@feathersjs/rest-client'
 
-const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
+const host = import.meta.env.VITE_CONNECTION_TARGET || `${window.location.origin}`
 const fetch = globalThis.fetch.bind(globalThis)
 
 export const feathersClient = createClient(rest(host).fetch(fetch), { storage: globalThis.localStorage })

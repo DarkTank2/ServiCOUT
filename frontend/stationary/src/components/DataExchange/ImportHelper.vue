@@ -266,7 +266,7 @@ const setupCreationData = function () {
         let setupSize = sizeData.value.find(({ ref }) => ref === sizeRef)
         let setupFlavour = flavourData.value.find(({ ref }) => ref === flavourRef)
 
-        let cat: CreationData<CategoriesData> = { ref: categoryRef, data: { name: category, active: true, tenantId: tenant.value?.id || 1 }, create: persistedCategory ? 'exists' : true, status: 'toBeCreated' }
+        let cat: CreationData<CategoriesData> = { ref: categoryRef, data: { name: category, active: true, tenantId: tenant.value?.id || 1, shippedToUsers: true }, create: persistedCategory ? 'exists' : true, status: 'toBeCreated' }
         let bsi: CreationData<MBaseItemsData> = { ref: baseItemRef, data: { name: baseItem, description: comment, categoryName: category, tenantId: tenant.value?.id || 1 }, create: persistedBaseItem ? 'exists' : true, status: 'toBeCreated', references: [setupCategory || cat] }
         let sz: CreationData<SizesData> = { ref: sizeRef, data: { name: size }, create: persistedSize ? 'exists' : true, status: 'toBeCreated' }
         let fl: CreationData<FlavoursData> = { ref: flavourRef, data: { name: flavour }, create: persistedFlavour ? 'exists' : true, status: 'toBeCreated' }

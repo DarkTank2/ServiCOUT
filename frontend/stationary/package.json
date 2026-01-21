@@ -20,7 +20,7 @@
     "@types/lodash": "^4.17.21",
     "@vueuse/core": "^14.1.0",
     "@vueuse/head": "^2.0.0",
-    "backend": "file:../../backend/public/backend-0.0.8.tgz",
+    "backend": "file:../../backend/public/backend-1.0.0.tgz",
     "feathers-pinia": "^4.5.4",
     "grid-layout-plus": "^1.1.1",
     "lodash": "^4.17.21",

@@ -112,6 +112,10 @@ const headers = computed(() => {
         title: 'Aktiv?',
         type: 'boolean'
     }, {
+        value: 'shippedToUsers',
+        title: 'Zu Kellner?',
+        type: 'boolean'
+    }, {
         value: 'tenantId',
         title: 'Tenant',
         type: 'select',

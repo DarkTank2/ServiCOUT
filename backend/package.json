@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "description": "The backend for the application ServiCOUT.",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "homepage": "",
   "private": true,
   "keywords": [
@@ -39,7 +39,7 @@
   "scripts": {
     "dev": "nodemon -x ts-node src/index.ts",
     "compile": "shx rm -rf lib/ && tsc",
-    "start": "node lib/",
+    "start": "knex migrate:latest && node lib/",
     "prettier": "npx prettier \"**/*.ts\" --write",
     "mocha": "cross-env NODE_ENV=test mocha test/ --require ts-node/register --recursive --extension .ts --exit",
     "test": "cross-env NODE_ENV=test npm run migrate && npm run mocha",

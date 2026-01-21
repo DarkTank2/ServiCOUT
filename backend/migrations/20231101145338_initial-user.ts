@@ -9,8 +9,14 @@ export async function up(knex: Knex): Promise<void> {
     await knex('users').insert({
         email: EMAIL,
         password: await localStrategy.hashPassword(PASSWORD!, {}),
-        tenantId: 1,
+        tenantId: 2,
         roleId: 1
+    })
+    await knex('users').insert({
+        email: 'user',
+        password: await localStrategy.hashPassword(PASSWORD!, {}),
+        tenantId: 2,
+        roleId: 3
     })
     logger.info(`Created default user!`)
 }

@@ -10,9 +10,10 @@
                     <p class="text-h5">Aufgenommen durch:</p>
                     <span class="text-medium-emphasis">{{ order.waiter }}</span>
                 </div>
-                <div style="flex-grow: 1;">
-                    <p class="text-h5">Tisch:</p>
-                    <span class="text-medium-emphasis">{{ order.tableId }}</span>
+                <div style="flex-grow: 1;" class="mr-2 pt-2">
+                    <!-- <p class="text-h5">Tisch:</p> -->
+                    <!-- <span class="text-medium-emphasis">{{ order.tableId }}</span> -->
+                    <v-select label="Tisch" :model-value="order.tableId" :items="tables" item-value="id" item-title="name" @update:model-value="changeTable" hide-details density="compact"></v-select>
                 </div>
                 <div style="flex-grow: 1;">
                     <p class="text-h5">Fertig gestellt:</p>
@@ -42,10 +43,17 @@ interface HistoryOrderHeaderProps {
 }
 const props = defineProps<HistoryOrderHeaderProps>()
 const order = api.service('orders').getFromStore(props.order.id!)
+const { data: tables } = api.service('tables').findInStore(computed(() => ({})))
 const changeFinished = function (newVal: boolean | null) {
     if (newVal === null) return
     let cloned = order.value.clone()
     cloned.finished = newVal
+    cloned.save()
+}
+const changeTable = function (newVal: number | null) {
+    if (newVal === null) return
+    let cloned = order.value.clone()
+    cloned.tableId = newVal
     cloned.save()
 }
 </script>

@@ -16,7 +16,7 @@ type OrderContainer = {
 }
 const props = defineProps<OrderContainer>()
 const order = api.service('orders').getFromStore(props.orderId)
-const table = api.service('tables').getFromStore(order.value.tableId!)
+const table = computed(() => api.service('tables').getFromStore(order.value.tableId!).value)
 const subscribedItems = computed(() => {
     const { data: items } = toRefs(api.service('items').findInStore(computed(() => ({ query: { baseItemId: { $in: usersettings.getSubscriptions } } }))))
     return items.value.map(({ id }) => id!)
@@ -24,7 +24,7 @@ const subscribedItems = computed(() => {
 const { data: orderedItems } = toRefs(api.service('ordered-items').findInStore(computed(() => ({ query: { orderId: props.orderId, itemId: { $in: subscribedItems.value }, open: { $gt: 0 } } }))))
 const appBarHeight = 64
 const containerPadding = 16 + 16
-const titleHeight = 10 + 32 + 10 // padding-top + content-height + padding-bottom
+const titleHeight = 10 + 40.8 + 10 // padding-top + content-height + padding-bottom
 const buttonHeight = 8 + 36 + 8 // padding-top + content-height + padding-bottom
 const cardTextPadding = 0 + 16 // padding-top + paddin-bottom only of card-text
 const rowMargin = 0 + 0 // since property 'no-gutters' is applied, no margin is applied to the dom-element

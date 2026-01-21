@@ -14,14 +14,24 @@ import {
   categoriesQueryResolver
 } from './categories.schema'
 
-import type { Application } from '../../declarations'
+import type { Application, HookContext } from '../../declarations'
 import { CategoriesService, getOptions } from './categories.class'
 import { categoriesPath, categoriesMethods } from './categories.shared'
 import { allowUserRole } from '../../hooks/allow-user-role'
 import { denyUserRole } from '../../hooks/deny-user-role'
+import { Roles } from '../../client'
 
 export * from './categories.class'
 export * from './categories.schema'
+
+const addCategoryFilter = async function (context: HookContext) {
+  if (!context.params.user?.role || context.params.user.role.name === 'user') {
+    context.params.query = {
+      ...context.params.query,
+      shippedToUsers: true
+    }
+  }
+}
 
 // A configure function that registers the service and its hooks via `app.configure`
 export const categories = (app: Application) => {
@@ -49,8 +59,8 @@ export const categories = (app: Application) => {
         schemaHooks.validateQuery(categoriesQueryValidator),
         schemaHooks.resolveQuery(categoriesQueryResolver)
       ],
-      find: [],
-      get: [],
+      find: [addCategoryFilter],
+      get: [addCategoryFilter],
       create: [
         allowUserRole(['admin']),
         schemaHooks.validateData(categoriesDataValidator),

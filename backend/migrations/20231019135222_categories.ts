@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name')
     table.string('color')
     table.boolean('active').notNullable().defaultTo(true)
+    table.boolean('shippedToUsers').notNullable().defaultTo(false)
     table.integer('tenantId').notNullable()
     table.unique(['name', 'tenantId'])
 

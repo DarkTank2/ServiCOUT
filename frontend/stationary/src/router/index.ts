@@ -5,12 +5,12 @@
  */
 
 // Composables
-import { createRouter, createWebHistory, type _Awaitable, type NavigationGuardReturn } from 'vue-router'
+import { createRouter, createWebHashHistory, type _Awaitable, type NavigationGuardReturn } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
 })
 

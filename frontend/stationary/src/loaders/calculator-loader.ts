@@ -1,7 +1,7 @@
 import { fetchAllBaseItems, fetchAllCategories, fetchAllFlavours, fetchAllItems, fetchAllSizes, fetchAllTables } from '@/utilities/fetchUtility'
 import { NavigationResult } from 'unplugin-vue-router/data-loaders'
 import { defineBasicLoader } from 'unplugin-vue-router/data-loaders/basic'
-export const useCalculatorLoader = defineBasicLoader('/calculator', async (_to) => {
+export const useCalculatorLoader = defineBasicLoader('/(calculator)/calculator', async (_to) => {
     const { api } = useFeathers()
     const { userId } = useAuthStore()
     if (!userId) {

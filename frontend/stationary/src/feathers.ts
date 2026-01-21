@@ -5,7 +5,7 @@ import pinia from './stores'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 
-const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
+const host = import.meta.env.VITE_CONNECTION_TARGET || `${window.location.origin}`
 const socket = io(host, { transports: ['websocket'] })
 
 export const feathersClient = createClient(socketio(socket), { storage: globalThis.localStorage })

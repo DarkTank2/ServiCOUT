@@ -75,7 +75,7 @@ export const useCalculatorStore = defineStore('calculator', () => {
         if (val === null) {
             editMode.value = false
         } else {
-            quickMode.value = val
+            editMode.value = val
         }
     }
     const updateImmediatelyFinishedMode = function (val: boolean | null) {

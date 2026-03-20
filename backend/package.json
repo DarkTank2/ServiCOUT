@@ -63,6 +63,7 @@
     "@feathersjs/socketio": "^5.0.11",
     "@feathersjs/transport-commons": "^5.0.11",
     "@feathersjs/typebox": "^5.0.11",
+    "feathers-hooks-common": "^8.2.1",
     "knex": "^3.0.1",
     "pg": "^8.11.3",
     "winston": "^3.11.0"

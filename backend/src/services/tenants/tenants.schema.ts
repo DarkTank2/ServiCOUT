@@ -14,6 +14,7 @@ export const tenantSchema = Type.Object(
     name: Type.String(),
     currentEventName: Type.Optional(Type.String()),
     limits: Type.Optional(Type.Integer()),
+    enableLogs: Type.Boolean(),
     parentId: Type.Optional(Type.Integer())
   },
   { $id: 'Tenant', additionalProperties: false }
@@ -25,7 +26,7 @@ export const tenantResolver = resolve<Tenant, HookContext<TenantService>>({})
 export const tenantExternalResolver = resolve<Tenant, HookContext<TenantService>>({})
 
 // Schema for creating new entries
-export const tenantDataSchema = Type.Pick(tenantSchema, ['name', 'currentEventName', 'parentId', 'limits'], {
+export const tenantDataSchema = Type.Pick(tenantSchema, ['name', 'currentEventName', 'parentId', 'limits', 'enableLogs'], {
   $id: 'TenantData'
 })
 export type TenantData = Static<typeof tenantDataSchema>

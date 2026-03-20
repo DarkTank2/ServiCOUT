@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { dataLogsClient } from './services/data-logs/data-logs.shared'
+export type {
+  DataLogs,
+  DataLogsData,
+  DataLogsQuery,
+  DataLogsPatch
+} from './services/data-logs/data-logs.shared'
+
 import { ordersClient } from './services/orders/orders.shared'
 export type { Orders, OrdersData, OrdersQuery, OrdersPatch } from './services/orders/orders.shared'
 
@@ -116,5 +124,6 @@ export const createClient = <Configuration = any,>(
   client.configure(orderedItemsClient)
   client.configure(rolesClient)
   client.configure(ordersClient)
+  client.configure(dataLogsClient)
   return client
 }

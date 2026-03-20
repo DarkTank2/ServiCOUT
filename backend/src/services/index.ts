@@ -1,3 +1,4 @@
+import { dataLogs } from './data-logs/data-logs'
 import { orders } from './orders/orders'
 import { roles } from './roles/roles'
 import { orderedItems } from './ordered-items/ordered-items'
@@ -16,6 +17,7 @@ import { users } from './users/users'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(dataLogs)
   app.configure(orders)
   app.configure(roles)
   app.configure(orderedItems)

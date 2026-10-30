@@ -18,10 +18,9 @@ import {
 import type { Application } from '../../declarations'
 import { OrderedItemsService, getOptions } from './ordered-items.class'
 import { orderedItemsPath, orderedItemsMethods } from './ordered-items.shared'
-import { logUser } from '../../hooks/log-user'
 import { logger } from '../../logger'
 import { authenticate } from '@feathersjs/authentication'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logUser, logDataChanges } from '../../hooks'
 
 export * from './ordered-items.class'
 export * from './ordered-items.schema'
@@ -123,10 +122,10 @@ export const orderedItems = (app: Application) => {
         schemaHooks.resolveExternal(orderedItemsExternalResolver),
         schemaHooks.resolveResult(orderedItemsResolver)
       ],
-      create: [createOrder],
-      update: [updateOrder],
-      patch: [updateOrder],
-      remove: [authenticate('jwt'),]
+      create: [createOrder, logDataChanges()],
+      update: [updateOrder, logDataChanges()],
+      patch: [updateOrder, logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -155,6 +154,9 @@ export const orderedItems = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[orderedItemsPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { ItemsService, getOptions } from './items.class'
 import { itemsPath, itemsMethods } from './items.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './items.class'
 export * from './items.schema'
@@ -39,9 +39,9 @@ export const items = (app: Application) => {
         schemaHooks.resolveExternal(itemsExternalResolver),
         schemaHooks.resolveResult(itemsResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -71,6 +71,9 @@ export const items = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[itemsPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

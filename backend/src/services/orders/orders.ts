@@ -18,7 +18,7 @@ import type { Application } from '../../declarations'
 import { OrdersService, getOptions } from './orders.class'
 import { ordersPath, ordersMethods } from './orders.shared'
 
-import { logUser } from '../../hooks/log-user'
+import { logUser, logDataChanges } from '../../hooks'
 
 export * from './orders.class'
 export * from './orders.schema'
@@ -39,7 +39,10 @@ export const orders = (app: Application) => {
         // authentcate('jwt),
         schemaHooks.resolveExternal(ordersExternalResolver),
         schemaHooks.resolveResult(ordersResolver)
-      ]
+      ],
+      create: [logDataChanges()],
+      patch: [logDataChanges()],
+      remove: [logDataChanges()]
     },
     before: {
       all: [schemaHooks.validateQuery(ordersQueryValidator), schemaHooks.resolveQuery(ordersQueryResolver)],
@@ -57,6 +60,9 @@ export const orders = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[ordersPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

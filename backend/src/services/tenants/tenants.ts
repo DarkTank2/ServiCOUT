@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { TenantService, getOptions } from './tenants.class'
 import { tenantPath, tenantMethods } from './tenants.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './tenants.class'
 export * from './tenants.schema'
@@ -38,9 +38,9 @@ export const tenant = (app: Application) => {
         schemaHooks.resolveExternal(tenantExternalResolver),
         schemaHooks.resolveResult(tenantResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [

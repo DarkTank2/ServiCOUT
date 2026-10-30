@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { RolesService, getOptions } from './roles.class'
 import { rolesPath, rolesMethods } from './roles.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './roles.class'
 export * from './roles.schema'
@@ -38,9 +38,9 @@ export const roles = (app: Application) => {
         schemaHooks.resolveExternal(rolesExternalResolver),
         schemaHooks.resolveResult(rolesResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [

@@ -22,6 +22,8 @@ import { dataLogsPath, dataLogsMethods } from './data-logs.shared'
 export * from './data-logs.class'
 export * from './data-logs.schema'
 
+import { allowUserRole } from '../../hooks'
+
 // A configure function that registers the service and its hooks via `app.configure`
 export const dataLogs = (app: Application) => {
   // Register our service on the Feathers application
@@ -46,8 +48,8 @@ export const dataLogs = (app: Application) => {
         schemaHooks.validateQuery(dataLogsQueryValidator),
         schemaHooks.resolveQuery(dataLogsQueryResolver)
       ],
-      find: [],
-      get: [],
+      find: [allowUserRole(['admin']),],
+      get: [allowUserRole(['admin']),],
       create: [
         disallow('external'),
         schemaHooks.validateData(dataLogsDataValidator),

@@ -17,9 +17,7 @@ import {
 import type { Application, HookContext } from '../../declarations'
 import { CategoriesService, getOptions } from './categories.class'
 import { categoriesPath, categoriesMethods } from './categories.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
-import { denyUserRole } from '../../hooks/deny-user-role'
-import { Roles } from '../../client'
+import { allowUserRole, denyUserRole, logDataChanges } from '../../hooks'
 
 export * from './categories.class'
 export * from './categories.schema'
@@ -50,9 +48,9 @@ export const categories = (app: Application) => {
         schemaHooks.resolveExternal(categoriesExternalResolver),
         schemaHooks.resolveResult(categoriesResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -82,6 +80,9 @@ export const categories = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+  publishMatrix[categoriesPath] = 3
+  app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

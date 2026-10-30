@@ -3,7 +3,7 @@ import { resolve } from '@feathersjs/schema'
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
 import type { Static } from '@feathersjs/typebox'
 
-import type { HookContext } from '../../declarations'
+import type { HookContext, ServiceTypes } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
 import type { DataLogsService } from './data-logs.class'
 
@@ -11,7 +11,24 @@ import type { DataLogsService } from './data-logs.class'
 export const dataLogsSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    // Compile-time service-path union from the application's registered services.
+    // Runtime validation remains string-based unless paths are supplied dynamically.
+    service: Type.Unsafe<keyof ServiceTypes>({ type: 'string' }),
+    method: Type.Union([
+      Type.Literal('find'),
+      Type.Literal('get'),
+      Type.Literal('create'),
+      Type.Literal('update'),
+      Type.Literal('patch'),
+      Type.Literal('remove')
+    ]),
+    entityId: Type.Integer(),
+    diff: Type.Optional(Type.Any()),
+    userId: Type.Integer(),
+    tenantId: Type.Integer(),
+    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
+    updatedAt: Type.Optional(Type.String({ format: 'date-time' }))
+
   },
   { $id: 'DataLogs', additionalProperties: false }
 )
@@ -22,7 +39,7 @@ export const dataLogsResolver = resolve<DataLogsQuery, HookContext<DataLogsServi
 export const dataLogsExternalResolver = resolve<DataLogs, HookContext<DataLogsService>>({})
 
 // Schema for creating new entries
-export const dataLogsDataSchema = Type.Pick(dataLogsSchema, ['text'], {
+export const dataLogsDataSchema = Type.Pick(dataLogsSchema, ['service', 'method', 'entityId', 'diff', 'userId', 'tenantId'], {
   $id: 'DataLogsData'
 })
 export type DataLogsData = Static<typeof dataLogsDataSchema>
@@ -40,7 +57,7 @@ export const dataLogsPatchResolver = resolve<DataLogsPatch, HookContext<DataLogs
 )
 
 // Schema for allowed query properties
-export const dataLogsQueryProperties = Type.Pick(dataLogsSchema, ['id', 'text'])
+export const dataLogsQueryProperties = Type.Pick(dataLogsSchema, ['id', 'service', 'method', 'entityId', 'diff', 'userId', 'tenantId'])
 export const dataLogsQuerySchema = Type.Intersect(
   [
     querySyntax(dataLogsQueryProperties),

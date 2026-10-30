@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { ItemsHaveOptionsService, getOptions } from './items-have-options.class'
 import { itemsHaveOptionsPath, itemsHaveOptionsMethods } from './items-have-options.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './items-have-options.class'
 export * from './items-have-options.schema'
@@ -39,9 +39,9 @@ export const itemsHaveOptions = (app: Application) => {
         schemaHooks.resolveExternal(itemsHaveOptionsExternalResolver),
         schemaHooks.resolveResult(itemsHaveOptionsResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -71,6 +71,9 @@ export const itemsHaveOptions = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[itemsHaveOptionsPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

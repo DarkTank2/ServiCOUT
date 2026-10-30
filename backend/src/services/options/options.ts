@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { OptionService, getOptions } from './options.class'
 import { optionPath, optionMethods } from './options.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './options.class'
 export * from './options.schema'
@@ -39,9 +39,9 @@ export const option = (app: Application) => {
         schemaHooks.resolveExternal(optionExternalResolver),
         schemaHooks.resolveResult(optionResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -71,6 +71,9 @@ export const option = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[optionPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

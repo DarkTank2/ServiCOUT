@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { TablesService, getOptions } from './tables.class'
 import { tablesPath, tablesMethods } from './tables.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './tables.class'
 export * from './tables.schema'
@@ -38,9 +38,9 @@ export const tables = (app: Application) => {
         schemaHooks.resolveExternal(tablesExternalResolver),
         schemaHooks.resolveResult(tablesResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -70,6 +70,9 @@ export const tables = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[tablesPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

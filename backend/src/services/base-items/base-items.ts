@@ -17,8 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { BaseItemsService, getOptions } from './base-items.class'
 import { baseItemsPath, baseItemsMethods } from './base-items.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
-import { denyUserRole } from '../../hooks/deny-user-role'
+import { allowUserRole, denyUserRole, logDataChanges } from '../../hooks'
 
 export * from './base-items.class'
 export * from './base-items.schema'
@@ -40,9 +39,9 @@ export const baseItems = (app: Application) => {
         schemaHooks.resolveExternal(baseItemsExternalResolver),
         schemaHooks.resolveResult(baseItemsResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -72,6 +71,9 @@ export const baseItems = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+  publishMatrix[baseItemsPath] = 3
+  app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

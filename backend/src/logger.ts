@@ -9,7 +9,7 @@ const myFormat = printf(({ level, message, label, timestamp }) => {
 // Configure the Winston logger. For the complete documentation see https://github.com/winstonjs/winston
 export const logger = createLogger({
   // To see more detailed errors, change this to 'debug'
-  level: 'info',
+  level: 'debug',
   format: combine(
     label({ label: 'scout-backend' }),
     timestamp(),

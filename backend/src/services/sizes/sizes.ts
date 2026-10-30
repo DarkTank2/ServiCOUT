@@ -17,7 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { SizesService, getOptions } from './sizes.class'
 import { sizesPath, sizesMethods } from './sizes.shared'
-import { allowUserRole } from '../../hooks/allow-user-role'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './sizes.class'
 export * from './sizes.schema'
@@ -38,9 +38,9 @@ export const sizes = (app: Application) => {
         schemaHooks.resolveExternal(sizesExternalResolver),
         schemaHooks.resolveResult(sizesResolver)
       ],
-      create: [authenticate('jwt'),],
-      patch: [authenticate('jwt'),],
-      remove: [authenticate('jwt'),]
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -70,6 +70,9 @@ export const sizes = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[sizesPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

@@ -1,16 +1,17 @@
 version: '3'
+name: 'servicout dev'
 services:
   postgres:
     image: postgres:13-alpine
-    container_name: ssp_db
+    container_name: servicout_db_dev
     environment:
       POSTGRES_USER: "scoutadmin"
       POSTGRES_PASSWORD: "DB4ScoutServiceProgram"
       POSTGRES_DB: "main"
     ports:
       - 5432:5432
-    # volumes:
-    #   - ./pgdata:/var/lib/postgresql/data
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
 
   # scout-proxy:
   #   image: traefik:v2.2
@@ -24,18 +25,18 @@ services:
   #     - ./traefik-fileprovider.yml:/etc/traefik/traefik-fileprovider.yml
 
   backend:
-    image: node:lts
-    container_name: "pff_backend"
+    image: servicout_backend:1.0.1
     user: "node"
     working_dir: /home/node/app
-    volumes:
-      - ./backend:/home/node/app
-    ports:
-       - 3030:3030
     environment:
-      - EMAIL=x.s@gmx.at
-      - PASSWORD=1234
-    command: "npm run full:dev"
+      DBCREDENTIALS: "postgres://scoutadmin:DB4ScoutServiceProgram@servicout_db_dev:5432/main"
+      PORT: 3030
+      EMAIL: "email"
+      PASSWORD: "password"
+    ports:
+       - 80:3030
+       - 3030:3030
+    command: "npm run start"
     depends_on:
       - postgres
 

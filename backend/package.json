@@ -1,13 +1,15 @@
 {
   "name": "backend",
   "description": "The backend for the application ServiCOUT.",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "homepage": "",
   "private": true,
   "keywords": [
     "feathers"
   ],
-  "author": {},
+  "author": {
+    "name": "ASeiler"
+  },
   "contributors": [],
   "bugs": {},
   "engines": {
@@ -37,20 +39,21 @@
   "scripts": {
     "dev": "nodemon -x ts-node src/index.ts",
     "compile": "shx rm -rf lib/ && tsc",
-    "start": "node lib/",
+    "start": "knex migrate:latest && node lib/",
     "prettier": "npx prettier \"**/*.ts\" --write",
     "mocha": "cross-env NODE_ENV=test mocha test/ --require ts-node/register --recursive --extension .ts --exit",
     "test": "cross-env NODE_ENV=test npm run migrate && npm run mocha",
     "bundle:client": "npm run compile && npm pack --pack-destination ./public",
     "migrate": "knex migrate:latest",
-    "migrate:make": "knex migrate:make"
+    "migrate:make": "knex migrate:make",
+    "full:dev": "cross-env EMAIL=email PASSWORD=password npm run migrate && npm run dev"
   },
   "dependencies": {
     "@feathersjs/adapter-commons": "^5.0.11",
     "@feathersjs/authentication": "^5.0.11",
     "@feathersjs/authentication-client": "^5.0.11",
     "@feathersjs/authentication-local": "^5.0.11",
-    "@feathersjs/authentication-oauth": "^5.0.11",
+    "@feathersjs/authentication-oauth": "^5.0.42",
     "@feathersjs/configuration": "^5.0.11",
     "@feathersjs/errors": "^5.0.11",
     "@feathersjs/feathers": "^5.0.11",
@@ -60,6 +63,7 @@
     "@feathersjs/socketio": "^5.0.11",
     "@feathersjs/transport-commons": "^5.0.11",
     "@feathersjs/typebox": "^5.0.11",
+    "feathers-hooks-common": "^8.2.1",
     "knex": "^3.0.1",
     "pg": "^8.11.3",
     "winston": "^3.11.0"
@@ -71,7 +75,7 @@
     "@types/node": "^20.8.4",
     "axios": "^1.5.1",
     "cross-env": "^7.0.3",
-    "mocha": "^10.2.0",
+    "mocha": "^7.2.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "shx": "^0.3.4",

@@ -11,7 +11,7 @@ import type { TablesService } from './tables.class'
 export const tablesSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    name: Type.String()
   },
   { $id: 'Tables', additionalProperties: false }
 )
@@ -22,7 +22,7 @@ export const tablesResolver = resolve<Tables, HookContext<TablesService>>({})
 export const tablesExternalResolver = resolve<Tables, HookContext<TablesService>>({})
 
 // Schema for creating new entries
-export const tablesDataSchema = Type.Pick(tablesSchema, ['text'], {
+export const tablesDataSchema = Type.Pick(tablesSchema, ['name'], {
   $id: 'TablesData'
 })
 export type TablesData = Static<typeof tablesDataSchema>
@@ -38,7 +38,7 @@ export const tablesPatchValidator = getValidator(tablesPatchSchema, dataValidato
 export const tablesPatchResolver = resolve<Tables, HookContext<TablesService>>({})
 
 // Schema for allowed query properties
-export const tablesQueryProperties = Type.Pick(tablesSchema, ['id', 'text'])
+export const tablesQueryProperties = Type.Pick(tablesSchema, ['id', 'name'])
 export const tablesQuerySchema = Type.Intersect(
   [
     querySyntax(tablesQueryProperties),

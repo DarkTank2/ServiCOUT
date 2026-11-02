@@ -14,12 +14,22 @@ import {
   categoriesQueryResolver
 } from './categories.schema'
 
-import type { Application } from '../../declarations'
+import type { Application, HookContext } from '../../declarations'
 import { CategoriesService, getOptions } from './categories.class'
 import { categoriesPath, categoriesMethods } from './categories.shared'
+import { allowUserRole, denyUserRole, logDataChanges } from '../../hooks'
 
 export * from './categories.class'
 export * from './categories.schema'
+
+const addCategoryFilter = async function (context: HookContext) {
+  if (!context.params.user?.role || context.params.user.role.name === 'user') {
+    context.params.query = {
+      ...context.params.query,
+      shippedToUsers: true
+    }
+  }
+}
 
 // A configure function that registers the service and its hooks via `app.configure`
 export const categories = (app: Application) => {
@@ -34,27 +44,34 @@ export const categories = (app: Application) => {
   app.service(categoriesPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(categoriesExternalResolver),
         schemaHooks.resolveResult(categoriesResolver)
-      ]
+      ],
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
         schemaHooks.validateQuery(categoriesQueryValidator),
         schemaHooks.resolveQuery(categoriesQueryResolver)
       ],
-      find: [],
-      get: [],
+      find: [addCategoryFilter],
+      get: [addCategoryFilter],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(categoriesDataValidator),
         schemaHooks.resolveData(categoriesDataResolver)
       ],
       patch: [
+        denyUserRole(['user']),
         schemaHooks.validateData(categoriesPatchValidator),
         schemaHooks.resolveData(categoriesPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []
@@ -63,6 +80,9 @@ export const categories = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+  publishMatrix[categoriesPath] = 3
+  app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

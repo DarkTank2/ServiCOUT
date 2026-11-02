@@ -5,7 +5,15 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('base-items', (table) => {
     table.increments('id')
 
-    table.string('text')
+    table.string('name').notNullable()
+    table.string('description')
+    table.boolean('available').defaultTo(true)
+    table.integer('categoryId').notNullable()
+    table.integer('tenantId').notNullable()
+    table.unique(['name', 'tenantId'])
+
+    table.foreign('categoryId').references('id').inTable('categories')
+    table.foreign('tenantId').references('id').inTable('tenants')
   })
 }
 

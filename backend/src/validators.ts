@@ -19,11 +19,12 @@ const formats: FormatsPluginOptions = [
   'regex'
 ]
 
-export const dataValidator: Ajv = addFormats(new Ajv({}), formats)
+export const dataValidator: Ajv = addFormats(new Ajv({ strict: false }), formats)
 
 export const queryValidator: Ajv = addFormats(
   new Ajv({
-    coerceTypes: true
+    coerceTypes: true,
+    strict: false
   }),
   formats
 )

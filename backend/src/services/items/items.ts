@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { ItemsService, getOptions } from './items.class'
 import { itemsPath, itemsMethods } from './items.shared'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './items.class'
 export * from './items.schema'
@@ -34,18 +35,34 @@ export const items = (app: Application) => {
   app.service(itemsPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(itemsExternalResolver),
         schemaHooks.resolveResult(itemsResolver)
-      ]
+      ],
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
-      all: [schemaHooks.validateQuery(itemsQueryValidator), schemaHooks.resolveQuery(itemsQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(itemsQueryValidator),
+        schemaHooks.resolveQuery(itemsQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(itemsDataValidator), schemaHooks.resolveData(itemsDataResolver)],
-      patch: [schemaHooks.validateData(itemsPatchValidator), schemaHooks.resolveData(itemsPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(itemsDataValidator),
+        schemaHooks.resolveData(itemsDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(itemsPatchValidator),
+        schemaHooks.resolveData(itemsPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []
@@ -54,6 +71,9 @@ export const items = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[itemsPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

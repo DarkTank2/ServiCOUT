@@ -1,75 +1,90 @@
 <template>
-  <v-container class="fill-height">
-    <v-responsive class="align-center text-center fill-height">
-      <v-img height="300" src="@/assets/logo.svg" />
+  <v-container class="fill-height" max-width="900">
+    <div>
+      <v-img
+        class="mb-4"
+        height="150"
+        src="@/assets/logo.png"
+      />
 
-      <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>
+      <div class="mb-8 text-center">
+        <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>
+        <h1 class="text-h2 font-weight-bold">Vuetify</h1>
+      </div>
 
-      <h1 class="text-h2 font-weight-bold">Vuetify</h1>
-
-      <div class="py-14" />
-
-      <v-row class="d-flex align-center justify-center">
-        <v-col cols="auto">
-          <v-btn
-            href="https://vuetifyjs.com/components/all/"
-            min-width="164"
-            rel="noopener noreferrer"
-            target="_blank"
-            variant="text"
+      <v-row>
+        <v-col cols="12">
+          <v-card
+            class="py-4"
+            color="surface-variant"
+            image="https://cdn.vuetifyjs.com/docs/images/one/create/feature.png"
+            prepend-icon="mdi-rocket-launch-outline"
+            rounded="lg"
+            variant="tonal"
           >
-            <v-icon
-              icon="mdi-view-dashboard"
-              size="large"
-              start
-            />
+            <template #image>
+              <v-img position="top right" />
+            </template>
 
-            Components
-          </v-btn>
+            <template #title>
+              <h2 class="text-h5 font-weight-bold">
+                Get started
+              </h2>
+            </template>
+
+            <template #subtitle>
+              <div class="text-subtitle-1">
+                Change this page by updating <v-kbd>{{ `<HelloWorld />` }}</v-kbd> in <v-kbd>components/HelloWorld.vue</v-kbd>.
+              </div>
+            </template>
+          </v-card>
         </v-col>
 
-        <v-col cols="auto">
-          <v-btn
-            color="primary"
-            href="https://vuetifyjs.com/introduction/why-vuetify/#feature-guides"
-            min-width="228"
+        <v-col v-for="link in links" :key="link.href" cols="6">
+          <v-card
+            append-icon="mdi-open-in-new"
+            class="py-4"
+            color="surface-variant"
+            :href="link.href"
+            :prepend-icon="link.icon"
             rel="noopener noreferrer"
-            size="x-large"
+            rounded="lg"
+            :subtitle="link.subtitle"
             target="_blank"
-            variant="flat"
-          >
-            <v-icon
-              icon="mdi-speedometer"
-              size="large"
-              start
-            />
-
-            Get Started
-          </v-btn>
-        </v-col>
-
-        <v-col cols="auto">
-          <v-btn
-            href="https://community.vuetifyjs.com/"
-            min-width="164"
-            rel="noopener noreferrer"
-            target="_blank"
-            variant="text"
-          >
-            <v-icon
-              icon="mdi-account-group"
-              size="large"
-              start
-            />
-
-            Community
-          </v-btn>
+            :title="link.title"
+            variant="tonal"
+          />
         </v-col>
       </v-row>
-    </v-responsive>
+    </div>
   </v-container>
 </template>
 
-<script lang="ts" setup>
-  //
+<script setup lang="ts">
+  const links = [
+    {
+      href: 'https://vuetifyjs.com/',
+      icon: 'mdi-text-box-outline',
+      subtitle: 'Learn about all things Vuetify in our documentation.',
+      title: 'Documentation',
+    },
+    {
+      href: 'https://vuetifyjs.com/introduction/why-vuetify/#feature-guides',
+      icon: 'mdi-star-circle-outline',
+      subtitle: 'Explore available framework Features.',
+      title: 'Features',
+    },
+    {
+      href: 'https://vuetifyjs.com/components/all',
+      icon: 'mdi-widgets-outline',
+      subtitle: 'Discover components in the API Explorer.',
+      title: 'Components',
+    },
+    {
+      href: 'https://discord.vuetifyjs.com',
+      icon: 'mdi-account-group-outline',
+      subtitle: 'Connect with Vuetify developers.',
+      title: 'Community',
+    },
+  ]
 </script>

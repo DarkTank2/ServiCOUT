@@ -8,9 +8,10 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "declaration": true,
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"

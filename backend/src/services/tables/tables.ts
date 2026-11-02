@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { TablesService, getOptions } from './tables.class'
 import { tablesPath, tablesMethods } from './tables.shared'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './tables.class'
 export * from './tables.schema'
@@ -34,18 +35,33 @@ export const tables = (app: Application) => {
   app.service(tablesPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
         schemaHooks.resolveExternal(tablesExternalResolver),
         schemaHooks.resolveResult(tablesResolver)
-      ]
+      ],
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
-      all: [schemaHooks.validateQuery(tablesQueryValidator), schemaHooks.resolveQuery(tablesQueryResolver)],
+      all: [
+        schemaHooks.validateQuery(tablesQueryValidator),
+        schemaHooks.resolveQuery(tablesQueryResolver)
+      ],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(tablesDataValidator), schemaHooks.resolveData(tablesDataResolver)],
-      patch: [schemaHooks.validateData(tablesPatchValidator), schemaHooks.resolveData(tablesPatchResolver)],
-      remove: []
+      create: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(tablesDataValidator),
+        schemaHooks.resolveData(tablesDataResolver)
+      ],
+      patch: [
+        allowUserRole(['admin']),
+        schemaHooks.validateData(tablesPatchValidator),
+        schemaHooks.resolveData(tablesPatchResolver)
+      ],
+      remove: [
+        allowUserRole(['admin'])
+      ]
     },
     after: {
       all: []
@@ -54,6 +70,9 @@ export const tables = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[tablesPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

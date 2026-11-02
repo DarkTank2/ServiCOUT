@@ -10,17 +10,43 @@ import 'vuetify/styles'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { VBtn } from 'vuetify/components'
+import { VColorInput } from 'vuetify/labs/VColorInput'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
-  theme: {
-    themes: {
-      light: {
-        colors: {
-          primary: '#1867C0',
-          secondary: '#5CBBF6',
-        },
-      },
-    },
+  components: {
+    VColorInput,
   },
+  theme: {
+    defaultTheme: 'system',
+  },
+  aliases: {
+    PrimaryButton: VBtn,
+    SecondaryButton: VBtn
+  },
+  defaults: {
+    VTextField: {
+      variant: 'outlined',
+      hideDetails: true
+    },
+    VSelect: {
+      variant: 'outlined',
+      hideDetails: true
+    },
+    VSwitch: {
+      hideDetails: true
+    },
+    VTooltip: {
+      maxWidth: 500
+    },
+    PrimaryButton: {
+      variant: 'outlined',
+      color: 'primary'
+    },
+    SecondaryButton: {
+      variant: 'solo',
+      color: 'primary'
+    }
+  }
 })

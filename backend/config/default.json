@@ -11,7 +11,7 @@
   },
   "postgresql": {
     "client": "pg",
-    "connection": "postgres://postgres:@localhost:5432/backend"
+    "connection": "postgres://scoutadmin:DB4ScoutServiceProgram@localhost:5432/main"
   },
   "authentication": {
     "entity": "user",
@@ -33,5 +33,6 @@
       "usernameField": "email",
       "passwordField": "password"
     }
-  }
+  },
+  "publishMatrix": {}
 }

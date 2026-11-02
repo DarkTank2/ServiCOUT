@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { FlavoursService, getOptions } from './flavours.class'
 import { flavoursPath, flavoursMethods } from './flavours.shared'
+import { allowUserRole, logDataChanges } from '../../hooks'
 
 export * from './flavours.class'
 export * from './flavours.schema'
@@ -34,10 +35,13 @@ export const flavours = (app: Application) => {
   app.service(flavoursPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(flavoursExternalResolver),
         schemaHooks.resolveResult(flavoursResolver)
-      ]
+      ],
+      create: [authenticate('jwt'), logDataChanges()],
+      patch: [authenticate('jwt'), logDataChanges()],
+      remove: [authenticate('jwt'), logDataChanges()]
     },
     before: {
       all: [
@@ -47,14 +51,18 @@ export const flavours = (app: Application) => {
       find: [],
       get: [],
       create: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(flavoursDataValidator),
         schemaHooks.resolveData(flavoursDataResolver)
       ],
       patch: [
+        allowUserRole(['admin']),
         schemaHooks.validateData(flavoursPatchValidator),
         schemaHooks.resolveData(flavoursPatchResolver)
       ],
-      remove: []
+      remove: [
+        allowUserRole(['admin']),
+      ]
     },
     after: {
       all: []
@@ -63,6 +71,9 @@ export const flavours = (app: Application) => {
       all: []
     }
   })
+  let publishMatrix = app.get('publishMatrix')
+    publishMatrix[flavoursPath] = 3
+    app.set('publishMatrix', publishMatrix)
 }
 
 // Add this service to the service type index

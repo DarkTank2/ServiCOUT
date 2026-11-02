@@ -1,0 +1,48 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: servicout_db
+    environment:
+      POSTGRES_USER: "scoutadmin"
+      POSTGRES_PASSWORD: "DB4ScoutServiceProgram"
+      POSTGRES_DB: "main"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+
+  # scout-proxy:
+  #   image: traefik:v2.2
+  #   #command: --api.insecure=true --providers.docker
+  #   ports:
+  #     - 80:80
+  #     - 8090:8080
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./traefik-op.yml:/etc/traefik/traefik.yml
+  #     - ./traefik-fileprovider-op.yml:/etc/traefik/traefik-fileprovider.yml
+
+  servicout:
+    image: servicout:v1.0.6
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      DBCREDENTIALS: "postgres://scoutadmin:DB4ScoutServiceProgram@servicout_db:5432/main"
+      NODE_ENV: "production"
+      PORT: 3030
+      EMAIL: "email"
+      PASSWORD: "password"
+    ports:
+       - 80:3030
+       - 3030:3030
+    command: "npm run start"
+    depends_on:
+      - postgres
+
+  # mobile:
+  #   image: servicout-mobile:v1.0.0
+
+  # stationary:
+  #   image: servicout-stationary:v1.0.0

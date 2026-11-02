@@ -2,11 +2,15 @@
     <v-dialog v-model="dialogModel" fullscreen scrollable :scrim="false" @update:model-value="updateDialog">
         <template #activator="{ props }">
             <v-card v-bind="props" :style="style" :disabled="props.disabled || !baseItem.available">
-                <v-card-text class="text-center mx-auto">
-                    {{ `${baseItem.name}` }}
-                    <br />
-                    <span v-if="!baseItem.available">(ausverkauft)</span>
-                    <slot name="external-disable-message"></slot>
+                <v-card-text class="text-center mx-auto d-flex flex-column justify-space-between" style="height: 100%">
+                    <div>
+                        <span>{{ `${baseItem.name}` }}</span>
+                        <br v-if="!baseItem.available"/>
+                        <span v-if="!baseItem.available">(ausverkauft)</span>
+                        <br />
+                        <slot name="external-disable-message"></slot>
+                    </div>
+                    <span class="font-weight-black" style="font-size: 2rem;">{{ `${baseItem.id}` }}</span>
                 </v-card-text>
             </v-card>
         </template>
